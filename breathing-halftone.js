@@ -70,19 +70,7 @@ Halftone.prototype.create = function() {
     blue: makeCanvasAndCtx()
   };
 
-  this.getImageData( function() {
-    // console.log( this.imgData.length );
-    console.log( this.getPixelData( 350, 350 ));
-    // set proxy canvases size
-    for ( var prop in this.proxyCanvases ) {
-      var proxy = this.proxyCanvases[ prop ];
-      proxy.canvas.width = this.img.width;
-      proxy.canvas.height = this.img.height;
-    }
-    this.canvas.width = this.img.width;
-    this.canvas.height = this.img.height;
-    this.render();
-  });
+  this.getImageData();
 };
 
 Halftone.prototype.getImageData = function( callback ) {
@@ -102,6 +90,27 @@ Halftone.prototype.onImgLoad = function( callback ) {
   var h = imgCanvas.height = this.img.height;
   ctx.drawImage( this.img, 0, 0 );
   this.imgData = ctx.getImageData( 0, 0, w, h ).data;
+
+  w *= this.options.zoom;
+  h *= this.options.zoom;
+
+  this.width = w;
+  this.height = h;
+
+  // console.log( this.imgData.length );
+  // console.log( this.getPixelData( 350, 350 ));
+  // set proxy canvases size
+  for ( var prop in this.proxyCanvases ) {
+    var proxy = this.proxyCanvases[ prop ];
+    proxy.canvas.width = w;
+    proxy.canvas.height = h;
+  }
+  this.canvas.width = w;
+  this.canvas.height = h;
+  this.render();
+
+
+
   callback.call( this );
 };
 
@@ -111,8 +120,8 @@ Halftone.prototype.render = function() {
   // black out
   this.ctx.globalCompositeOperation = 'source-over';
   this.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
-  var w = this.canvas.width;
-  var h = this.canvas.height;
+  var w = this.width;
+  var h = this.height;
   this.ctx.fillRect( 0, 0, w, h );
 
   // composite grids
@@ -131,17 +140,13 @@ Halftone.prototype.renderGrid = function( color, angle ) {
   proxy.ctx.fillRect( 0, 0, w, h );
 
 
-  var w = this.canvas.width;
-  var h = this.canvas.height;
+  var w = this.width;
+  var h = this.height;
   var diag = Math.max( w, h ) * ROOT_2;
-
-  var zoom = 1;
 
   var gridSize = this.options.gridSize;
   var cols = Math.ceil( diag / gridSize );
   var rows = Math.ceil( diag / gridSize );
-
-  var radius = gridSize * ROOT_2 / 2;
 
   // set fill color
   proxy.ctx.fillStyle = {
@@ -176,22 +181,48 @@ Halftone.prototype.renderGrid = function( color, angle ) {
       // shift back
       x2 += w / 2;
       y2 += h / 2;
-      if ( x2 > 0 && x2 < w && y2 > 0 && y2 < h ) {
-        var x3 = x2 / zoom;
-        var y3 = y2 / zoom;
-        var pixelData = this.getPixelData( x3, y3 );
-        var colorSize = pixelData[ color ] / 255;
-        if ( !this.options.isAdditive ) {
-          colorSize = 1 - colorSize;
-        }
-        circle( proxy.ctx, x2, y2, colorSize * radius );
-        // rect( renderCtx, x2, y2, colorSize * spacing, angle );
-      }
+      this.renderDot( x2, y2, color, proxy );
     }
   }
 
   // draw proxy canvas to actual canvas as whole layer
   this.ctx.drawImage( proxy.canvas, 0, 0 );
+
+};
+
+Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
+  var w = this.canvas.width;
+  var h = this.canvas.height;
+
+  // don't render if coords are outside image
+  if ( x2 < 0 || x2 > w || y2 < 0 || y2 > h ) {
+    return;
+  }
+
+  var gridSize = this.options.gridSize;
+  var radius = gridSize * ROOT_2 / 2;
+
+  var x3 = x2 / this.options.zoom;
+  var y3 = y2 / this.options.zoom;
+  var pixelData = this.getPixelData( x3, y3 );
+
+  // don't render unecessary dots
+  var totalColor = pixelData.red + pixelData.green + pixelData.blue;
+  // console.log( totalColor );
+  if (
+    ( this.options.isAdditive && totalColor === 0 ) ||
+    ( !this.options.isAdditive && totalColor === 255 )
+  ) {
+    // console.log('no dot');
+    return;
+  }
+
+  var colorSize = pixelData[ color ] / 255;
+  if ( !this.options.isAdditive ) {
+    colorSize = 1 - colorSize;
+  }
+  circle( proxy.ctx, x2, y2, colorSize * radius );
+  // rect( renderCtx, x2, y2, colorSize * spacing, angle );
 
 };
 
