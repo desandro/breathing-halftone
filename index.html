@@ -10,12 +10,15 @@
 
   <h1>breathing halftone</h1>
 
-  <canvas id="breathing-halftone" data-src="img/brother1.jpg"></canvas>
+  <img id="breathing-halftone" src="img/brother1.jpg" />
 
 <script src="breathing-halftone.js"></script>
 <script>
 window.onload = function() {
-  new BreathingHalftone( document.querySelector('#breathing-halftone') );
+  var img = document.querySelector('#breathing-halftone');
+  new BreathingHalftone( img, {
+    gridSize: 40
+  });
 };
 
 
