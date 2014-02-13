@@ -37,8 +37,9 @@ function Halftone( img, options ) {
 }
 
 Halftone.defaults = {
-  gridSize: 40,
-  zoom: 1
+  gridSize: 20,
+  zoom: 1,
+  isAdditive: true
 };
 
 function makeCanvasAndCtx() {
@@ -58,7 +59,8 @@ Halftone.prototype.create = function() {
   this.canvas = canvasAndCtx.canvas;
   this.ctx = canvasAndCtx.ctx;
   insertAfter( this.canvas, this.img );
-  
+  this.img.style.display = 'none';
+
   // this.img.parentNode.insertBefore();
 
   // create separate canvases for each color
@@ -108,13 +110,13 @@ Halftone.prototype.render = function() {
 
   // black out
   this.ctx.globalCompositeOperation = 'source-over';
-  this.ctx.fillStyle = 'black';
+  this.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
   var w = this.canvas.width;
   var h = this.canvas.height;
   this.ctx.fillRect( 0, 0, w, h );
 
   // composite grids
-  this.ctx.globalCompositeOperation = 'lighter';
+  this.ctx.globalCompositeOperation = this.options.isAdditive ? 'lighter' : 'darker';
   this.renderGrid( 'red', 1 );
   this.renderGrid( 'green', 2.5 );
   this.renderGrid( 'blue', 5 );
@@ -132,27 +134,28 @@ Halftone.prototype.renderGrid = function( color, angle ) {
   var w = this.canvas.width;
   var h = this.canvas.height;
   var diag = Math.max( w, h ) * ROOT_2;
-  
+
   var zoom = 1;
 
   var gridSize = this.options.gridSize;
   var cols = Math.ceil( diag / gridSize );
   var rows = Math.ceil( diag / gridSize );
-  console.log( cols, rows );
+
   var radius = gridSize * ROOT_2 / 2;
 
-  // set color
-  switch ( color ) {
-    case 'red' :
-      proxy.ctx.fillStyle = 'rgb(255,0,0)';
-      break;
-    case 'green' :
-      proxy.ctx.fillStyle = 'rgb(0,255,0)';
-      break;
-    case 'blue' :
-      proxy.ctx.fillStyle = 'rgb(0,0,255)';
-      break;
-  }
+  // set fill color
+  proxy.ctx.fillStyle = {
+    additive: {
+      red: '#FF0000',
+      green: '#00FF00',
+      blue: '#0000FF'
+    },
+    subtractive: {
+      red: '#00FFFF',
+      green: '#FF00FF',
+      blue: '#FFFF00'
+    }
+  }[ this.options.isAdditive ? 'additive' : 'subtractive' ][ color ];
 
   // var mod = ( frame % repeatFrames ) / repeatFrames || 1;
   for ( var row = 0; row < rows; row++ ) {
@@ -178,6 +181,9 @@ Halftone.prototype.renderGrid = function( color, angle ) {
         var y3 = y2 / zoom;
         var pixelData = this.getPixelData( x3, y3 );
         var colorSize = pixelData[ color ] / 255;
+        if ( !this.options.isAdditive ) {
+          colorSize = 1 - colorSize;
+        }
         circle( proxy.ctx, x2, y2, colorSize * radius );
         // rect( renderCtx, x2, y2, colorSize * spacing, angle );
       }
