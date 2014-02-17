@@ -140,9 +140,8 @@ Halftone.prototype.renderGrid = function( color, angle ) {
 
   // console.log( w, h );
 
-  // proxy.ctx.fillStyle = 'black';
-  // proxy.ctx.fillRect( 0, 0, w, h );
-
+  proxy.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
+  proxy.ctx.fillRect( 0, 0, this.width, this.height );
 
   // set fill color
   proxy.ctx.fillStyle = {
@@ -158,8 +157,8 @@ Halftone.prototype.renderGrid = function( color, angle ) {
     }
   }[ this.options.isAdditive ? 'additive' : 'subtractive' ][ color ];
 
-
-  this.renderCartesianGrid( color, angle, proxy );
+  var renderMethod = this.options.isRadial ? 'renderRadialGrid' : 'renderCartesianGrid';
+  this[ renderMethod ]( color, angle, proxy );
 
   // draw proxy canvas to actual canvas as whole layer
   this.ctx.drawImage( proxy.canvas, 0, 0 );
@@ -176,6 +175,7 @@ Halftone.prototype.renderCartesianGrid = function( color, angle, proxy ) {
   var gridSize = this.options.gridSize;
   var cols = Math.ceil( diag / gridSize );
   var rows = Math.ceil( diag / gridSize );
+
 
   // var mod = ( frame % repeatFrames ) / repeatFrames || 1;
   for ( var row = 0; row < rows; row++ ) {
@@ -201,6 +201,33 @@ Halftone.prototype.renderCartesianGrid = function( color, angle, proxy ) {
   }
 };
 
+Halftone.prototype.renderRadialGrid = function( color, angle, proxy ) {
+  var w = this.width;
+  var h = this.height;
+  var diag = Math.max( w, h ) * ROOT_2;
+
+  var gridSize = this.options.gridSize;
+
+  var halfW = w / 2;
+  var halfH = h / 2;
+  var offset = 100;
+  var centerX = halfW + Math.cos( angle ) * offset;
+  var centerY = halfH + Math.sin( angle ) * offset;
+
+  var maxLevel = Math.ceil( ( diag + offset ) / gridSize );
+
+  for ( var level=0; level < maxLevel; level++ ) {
+    var max = level * 6 || 1;
+    for ( var j=0; j < max; j++ ) {
+      var theta = TAU * j / max + angle;
+      var x = centerX + Math.cos( theta ) * level * gridSize;
+      var y = centerY + Math.sin( theta ) * level * gridSize;
+      this.renderDot( x, y, color, proxy );
+    }
+  }
+
+};
+
 Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
   var w = this.canvas.width;
   var h = this.canvas.height;
@@ -220,10 +247,8 @@ Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
   // don't render unecessary dots
   var totalColor = pixelData.red + pixelData.green + pixelData.blue;
   // console.log( totalColor );
-  if (
-    ( this.options.isAdditive && totalColor === 0 ) ||
-    ( !this.options.isAdditive && totalColor === 255 )
-  ) {
+  var nullColor = this.options.isAdditive ? 0 : 255;
+  if ( totalColor === nullColor ) {
     // console.log('no dot');
     return;
   }
