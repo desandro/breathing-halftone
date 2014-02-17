@@ -110,8 +110,9 @@ Halftone.prototype.onImgLoad = function( callback ) {
   this.render();
 
 
-
-  callback.call( this );
+  if ( callback ) {
+    callback.call( this );
+  }
 };
 
 Halftone.prototype.render = function() {
@@ -136,17 +137,12 @@ Halftone.prototype.renderGrid = function( color, angle ) {
 
   var proxy = this.proxyCanvases[ color ];
   // var renderCtx = renderCanvases[ color ].ctx;
-  proxy.ctx.fillStyle = 'black';
-  proxy.ctx.fillRect( 0, 0, w, h );
 
+  // console.log( w, h );
 
-  var w = this.width;
-  var h = this.height;
-  var diag = Math.max( w, h ) * ROOT_2;
+  // proxy.ctx.fillStyle = 'black';
+  // proxy.ctx.fillRect( 0, 0, w, h );
 
-  var gridSize = this.options.gridSize;
-  var cols = Math.ceil( diag / gridSize );
-  var rows = Math.ceil( diag / gridSize );
 
   // set fill color
   proxy.ctx.fillStyle = {
@@ -161,6 +157,25 @@ Halftone.prototype.renderGrid = function( color, angle ) {
       blue: '#FFFF00'
     }
   }[ this.options.isAdditive ? 'additive' : 'subtractive' ][ color ];
+
+
+  this.renderCartesianGrid( color, angle, proxy );
+
+  // draw proxy canvas to actual canvas as whole layer
+  this.ctx.drawImage( proxy.canvas, 0, 0 );
+
+};
+
+Halftone.prototype.renderCartesianGrid = function( color, angle, proxy ) {
+
+  var w = this.width;
+  var h = this.height;
+
+  var diag = Math.max( w, h ) * ROOT_2;
+
+  var gridSize = this.options.gridSize;
+  var cols = Math.ceil( diag / gridSize );
+  var rows = Math.ceil( diag / gridSize );
 
   // var mod = ( frame % repeatFrames ) / repeatFrames || 1;
   for ( var row = 0; row < rows; row++ ) {
@@ -184,10 +199,6 @@ Halftone.prototype.renderGrid = function( color, angle ) {
       this.renderDot( x2, y2, color, proxy );
     }
   }
-
-  // draw proxy canvas to actual canvas as whole layer
-  this.ctx.drawImage( proxy.canvas, 0, 0 );
-
 };
 
 Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
