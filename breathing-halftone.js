@@ -132,8 +132,6 @@ Halftone.prototype.initParticles = function() {
     blue: this[ getParticlesMethod ]( 5 )
   };
 
-  console.log( this.particles.red.length );
-
 };
 
 Halftone.prototype.render = function() {
@@ -178,7 +176,7 @@ Halftone.prototype.renderGrid = function( color ) {
 
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
-    particle.render( proxy.ctx );
+    particle.render( proxy.ctx, color );
   }
 
   // draw proxy canvas to actual canvas as whole layer
@@ -262,9 +260,7 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
 
   var gridSize = this.options.gridSize;
 
-  var x3 = x2 / this.options.zoom;
-  var y3 = y2 / this.options.zoom;
-  var pixelData = this.getPixelData( x3, y3 );
+  var pixelData = this.getPixelData( x2, y2 );
 
   // don't render unecessary dots
   var totalColor = pixelData.red + pixelData.green + pixelData.blue;
@@ -274,6 +270,7 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
   }
 
   return new Particle({
+    parent: this,
     origin: new Vector( x2, y2 ),
     naturalSize: gridSize * ROOT_2 / 2,
     friction: 0.2
@@ -308,8 +305,9 @@ Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
 };
 
 Halftone.prototype.getPixelData = function( x, y ) {
-  x = Math.round( x );
-  y = Math.round( y );
+
+  x = Math.round( x / this.options.zoom );
+  y = Math.round( y / this.options.zoom );
   var pixelIndex = x + y * this.img.width;
   pixelIndex *= 4;
   return {

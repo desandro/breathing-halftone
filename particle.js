@@ -14,6 +14,7 @@ var Vector = Halftone.Vector;
 function Particle( properties ) {
   this.origin = properties.origin;
   this.naturalSize = properties.naturalSize;
+  this.parent = properties.parent;
   this.friction = properties.friction;
   this.position = Vector.copy( this.origin );
   this.velocity = new Vector();
@@ -30,10 +31,16 @@ Particle.prototype.update = function() {
   this.acceleration.set( 0, 0 );
 };
 
-Particle.prototype.render = function( ctx ) {
-  var size = this.naturalSize;
+Particle.prototype.render = function( ctx, color ) {
+  var x = this.position.x;
+  var y = this.position.y;
+  var colorSize = this.parent.getPixelData( x, y )[ color ] / 255;
+  if ( !this.parent.options.isAdditive ) {
+    colorSize = 1 - colorSize;
+  }
+  var size = this.naturalSize * colorSize;
   ctx.beginPath();
-  ctx.arc( this.position.x, this.position.y, size, 0, TAU );
+  ctx.arc( x, y, size, 0, TAU );
   ctx.fill();
   ctx.closePath();
 };
