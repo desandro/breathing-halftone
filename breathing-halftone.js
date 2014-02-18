@@ -122,7 +122,6 @@ Halftone.prototype.onImgLoad = function( callback ) {
 
 Halftone.prototype.initParticles = function() {
 
-
   var getParticlesMethod = this.options.isRadial ?
     'getRadialGridParticles' : 'getCartesianGridParticles';
 
@@ -149,18 +148,14 @@ Halftone.prototype.render = function() {
 
   // composite grids
   this.ctx.globalCompositeOperation = this.options.isAdditive ? 'lighter' : 'darker';
-  this.renderGrid( 'red' );
-  this.renderGrid( 'green' );
-  this.renderGrid( 'blue' );
+  this.renderGrid('red');
+  this.renderGrid('green');
+  this.renderGrid('blue');
 
 };
 
 Halftone.prototype.renderGrid = function( color ) {
-
   var proxy = this.proxyCanvases[ color ];
-  // var renderCtx = renderCanvases[ color ].ctx;
-
-  // console.log( w, h );
 
   proxy.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
   proxy.ctx.fillRect( 0, 0, this.width, this.height );
@@ -186,7 +181,6 @@ Halftone.prototype.renderGrid = function( color ) {
     particle.render( proxy.ctx );
   }
 
-
   // draw proxy canvas to actual canvas as whole layer
   this.ctx.drawImage( proxy.canvas, 0, 0 );
 
@@ -204,14 +198,10 @@ Halftone.prototype.getCartesianGridParticles = function( angle ) {
   var cols = Math.ceil( diag / gridSize );
   var rows = Math.ceil( diag / gridSize );
 
-
-  // var mod = ( frame % repeatFrames ) / repeatFrames || 1;
   for ( var row = 0; row < rows; row++ ) {
     for ( var col = 0; col < cols; col++ ) {
       var x1 = ( col + 0.5 ) * gridSize;
       var y1 = ( row + 0.5 ) * gridSize;
-      // move by x
-      // x1 += ((frame % repeatFrames) / repeatFrames) * spacing;
       // offset for diagonal
       x1 -= ( diag - w ) / 2;
       y1 -= ( diag - h ) / 2;
@@ -224,13 +214,11 @@ Halftone.prototype.getCartesianGridParticles = function( angle ) {
       // shift back
       x2 += w / 2;
       y2 += h / 2;
-      var origin = new Vector( x2, y2 );
-      var particle = new Particle({
-        origin: origin,
-        naturalSize: gridSize * ROOT_2 / 2,
-        friction: 0.2
-      });
-      particles.push( particle );
+
+      var particle = this.initParticle( x2, y2 );
+      if ( particle ) {
+        particles.push( particle );
+      }
     }
   }
 
@@ -264,14 +252,37 @@ Halftone.prototype.renderRadialGrid = function( color, angle, proxy ) {
 
 };
 
-Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
+Halftone.prototype.initParticle = function( x2, y2 ) {
   var w = this.canvas.width;
   var h = this.canvas.height;
-
   // don't render if coords are outside image
   if ( x2 < 0 || x2 > w || y2 < 0 || y2 > h ) {
     return;
   }
+
+  var gridSize = this.options.gridSize;
+
+  var x3 = x2 / this.options.zoom;
+  var y3 = y2 / this.options.zoom;
+  var pixelData = this.getPixelData( x3, y3 );
+
+  // don't render unecessary dots
+  var totalColor = pixelData.red + pixelData.green + pixelData.blue;
+  var nullColor = this.options.isAdditive ? 0 : 255 * 3;
+  if ( totalColor === nullColor ) {
+    return;
+  }
+
+  return new Particle({
+    origin: new Vector( x2, y2 ),
+    naturalSize: gridSize * ROOT_2 / 2,
+    friction: 0.2
+  });
+
+};
+
+Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
+
 
   var gridSize = this.options.gridSize;
   var radius = gridSize * ROOT_2 / 2;
@@ -282,10 +293,8 @@ Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
 
   // don't render unecessary dots
   var totalColor = pixelData.red + pixelData.green + pixelData.blue;
-  // console.log( totalColor );
   var nullColor = this.options.isAdditive ? 0 : 255;
   if ( totalColor === nullColor ) {
-    // console.log('no dot');
     return;
   }
 
