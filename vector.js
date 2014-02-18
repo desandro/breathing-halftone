@@ -4,7 +4,7 @@
 
 // ----- vars ----- //
 
-var Halftone = window.BreathingHalftone || {};
+var Halftone = window.BreathingHalftone = window.BreathingHalftone || {};
 
 // -------------------------- Vector -------------------------- //
 

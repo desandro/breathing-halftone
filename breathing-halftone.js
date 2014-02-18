@@ -111,12 +111,30 @@ Halftone.prototype.onImgLoad = function( callback ) {
   }
   this.canvas.width = w;
   this.canvas.height = h;
+  this.initParticles();
   this.render();
 
 
   if ( callback ) {
     callback.call( this );
   }
+};
+
+Halftone.prototype.initParticles = function() {
+
+
+  var getParticlesMethod = this.options.isRadial ?
+    'getRadialGridParticles' : 'getCartesianGridParticles';
+
+  // separate array of particles for each color
+  this.particles = {
+    red: this[ getParticlesMethod ]( 1 ),
+    green: this[ getParticlesMethod ]( 2.5 ),
+    blue: this[ getParticlesMethod ]( 5 )
+  };
+
+  console.log( this.particles.red.length );
+
 };
 
 Halftone.prototype.render = function() {
@@ -131,13 +149,13 @@ Halftone.prototype.render = function() {
 
   // composite grids
   this.ctx.globalCompositeOperation = this.options.isAdditive ? 'lighter' : 'darker';
-  this.renderGrid( 'red', 1 );
-  this.renderGrid( 'green', 2.5 );
-  this.renderGrid( 'blue', 5 );
+  this.renderGrid( 'red' );
+  this.renderGrid( 'green' );
+  this.renderGrid( 'blue' );
 
 };
 
-Halftone.prototype.renderGrid = function( color, angle ) {
+Halftone.prototype.renderGrid = function( color ) {
 
   var proxy = this.proxyCanvases[ color ];
   // var renderCtx = renderCanvases[ color ].ctx;
@@ -161,15 +179,21 @@ Halftone.prototype.renderGrid = function( color, angle ) {
     }
   }[ this.options.isAdditive ? 'additive' : 'subtractive' ][ color ];
 
-  var renderMethod = this.options.isRadial ? 'renderRadialGrid' : 'renderCartesianGrid';
-  this[ renderMethod ]( color, angle, proxy );
+  var particles = this.particles[ color ];
+
+  for ( var i=0, len = particles.length; i < len; i++ ) {
+    var particle = particles[i];
+    particle.render( proxy.ctx );
+  }
+
 
   // draw proxy canvas to actual canvas as whole layer
   this.ctx.drawImage( proxy.canvas, 0, 0 );
 
 };
 
-Halftone.prototype.renderCartesianGrid = function( color, angle, proxy ) {
+Halftone.prototype.getCartesianGridParticles = function( angle ) {
+  var particles = [];
 
   var w = this.width;
   var h = this.height;
@@ -200,9 +224,17 @@ Halftone.prototype.renderCartesianGrid = function( color, angle, proxy ) {
       // shift back
       x2 += w / 2;
       y2 += h / 2;
-      this.renderDot( x2, y2, color, proxy );
+      var origin = new Vector( x2, y2 );
+      var particle = new Particle({
+        origin: origin,
+        naturalSize: gridSize * ROOT_2 / 2,
+        friction: 0.2
+      });
+      particles.push( particle );
     }
   }
+
+  return particles;
 };
 
 Halftone.prototype.renderRadialGrid = function( color, angle, proxy ) {

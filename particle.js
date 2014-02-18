@@ -4,8 +4,12 @@
 
 // ----- vars ----- //
 
+var TAU = Math.PI * 2;
+
 var Halftone = window.BreathingHalftone || {};
 var Vector = Halftone.Vector;
+
+// -------------------------- Particle -------------------------- //
 
 function Particle( properties ) {
   this.origin = properties.origin;
@@ -24,6 +28,14 @@ Particle.prototype.update = function() {
   this.position.add( this.velocity );
   // reset acceleration
   this.acceleration.set( 0, 0 );
+};
+
+Particle.prototype.render = function( ctx ) {
+  var size = this.naturalSize;
+  ctx.beginPath();
+  ctx.arc( this.position.x, this.position.y, size, 0, TAU );
+  ctx.fill();
+  ctx.closePath();
 };
 
 Halftone.Particle = Particle;
