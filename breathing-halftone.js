@@ -240,7 +240,9 @@ Halftone.prototype.getCartesianGridParticles = function( angle ) {
   return particles;
 };
 
-Halftone.prototype.renderRadialGrid = function( color, angle, proxy ) {
+Halftone.prototype.getRadialGridParticles = function( angle ) {
+  var particles = [];
+
   var w = this.width;
   var h = this.height;
   var diag = Math.max( w, h ) * ROOT_2;
@@ -261,9 +263,14 @@ Halftone.prototype.renderRadialGrid = function( color, angle, proxy ) {
       var theta = TAU * j / max + angle;
       var x = centerX + Math.cos( theta ) * level * gridSize;
       var y = centerY + Math.sin( theta ) * level * gridSize;
-      this.renderDot( x, y, color, proxy );
+      var particle = this.initParticle( x, y );
+      if ( particle ) {
+        particles.push( particle );
+      }
     }
   }
+
+  return particles;
 
 };
 
@@ -295,32 +302,6 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
 
 };
 
-Halftone.prototype.renderDot = function( x2, y2, color, proxy ) {
-
-
-  var gridSize = this.options.gridSize;
-  var radius = gridSize * ROOT_2 / 2;
-
-  var x3 = x2 / this.options.zoom;
-  var y3 = y2 / this.options.zoom;
-  var pixelData = this.getPixelData( x3, y3 );
-
-  // don't render unecessary dots
-  var totalColor = pixelData.red + pixelData.green + pixelData.blue;
-  var nullColor = this.options.isAdditive ? 0 : 255;
-  if ( totalColor === nullColor ) {
-    return;
-  }
-
-  var colorSize = pixelData[ color ] / 255;
-  if ( !this.options.isAdditive ) {
-    colorSize = 1 - colorSize;
-  }
-  circle( proxy.ctx, x2, y2, colorSize * radius );
-  // rect( renderCtx, x2, y2, colorSize * spacing, angle );
-
-};
-
 Halftone.prototype.getPixelData = function( x, y ) {
 
   x = Math.round( x / this.options.zoom );
@@ -335,13 +316,6 @@ Halftone.prototype.getPixelData = function( x, y ) {
   };
 };
 
-
-function circle( ctx, x, y, r ) {
-  ctx.beginPath();
-  ctx.arc( x, y, r, 0, TAU );
-  ctx.fill();
-  ctx.closePath();
-}
 
 Halftone.Vector = Vector;
 Halftone.Particle = Particle;
