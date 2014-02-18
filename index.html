@@ -12,15 +12,17 @@
 
   <img id="breathing-halftone" src="img/brother1.jpg" />
 
+<script src="vector.js"></script>
+<script src="particle.js"></script>
 <script src="breathing-halftone.js"></script>
 <script>
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   new BreathingHalftone( img, {
-    zoom: 1.5,
-    gridSize: 9,
+    zoom: 2,
+    gridSize: 15,
     isAdditive: false,
-    isRadial: true
+    isRadial: false
   });
 };
 

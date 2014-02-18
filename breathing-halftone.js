@@ -27,6 +27,10 @@ function insertAfter( elem, afterElem ) {
   }
 }
 
+var _Halftone = window.BreathingHalftone || {};
+var Vector = _Halftone.Vector;
+var Particle = _Halftone.Particle;
+
 // -------------------------- BreathingHalftone -------------------------- //
 
 function Halftone( img, options ) {
@@ -210,7 +214,7 @@ Halftone.prototype.renderRadialGrid = function( color, angle, proxy ) {
 
   var halfW = w / 2;
   var halfH = h / 2;
-  var offset = 100;
+  var offset = gridSize;
   var centerX = halfW + Math.cos( angle ) * offset;
   var centerY = halfH + Math.sin( angle ) * offset;
 
@@ -283,7 +287,8 @@ function circle( ctx, x, y, r ) {
   ctx.closePath();
 }
 
-
+Halftone.Vector = Vector;
+Halftone.Particle = Particle;
 window.BreathingHalftone = Halftone;
 
 
