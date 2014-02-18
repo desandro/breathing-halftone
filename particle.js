@@ -21,6 +21,10 @@ function Particle( properties ) {
   this.acceleration = new Vector();
 }
 
+Particle.prototype.applyForce = function( force ) {
+  this.acceleration.add( force );
+};
+
 Particle.prototype.update = function() {
   // velocity
   this.velocity.add( this.acceleration );

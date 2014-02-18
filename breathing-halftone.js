@@ -112,7 +112,7 @@ Halftone.prototype.onImgLoad = function( callback ) {
   this.canvas.width = w;
   this.canvas.height = h;
   this.initParticles();
-  this.render();
+  this.animate();
 
 
   if ( callback ) {
@@ -132,6 +132,23 @@ Halftone.prototype.initParticles = function() {
     blue: this[ getParticlesMethod ]( 5 )
   };
 
+};
+
+Halftone.prototype.animate = function() {
+  this.update();
+  this.render();
+  requestAnimationFrame( this.animate.bind( this ) );
+};
+
+Halftone.prototype.update = function() {
+  var force = new Vector( 0.0, 0.4 );
+  var particles = this.particles.red.concat( this.particles.green )
+    .concat( this.particles.blue );
+  for ( var i=0, len = particles.length; i < len; i++ ) {
+    var particle = particles[i];
+    particle.applyForce( force );
+    particle.update();
+  }
 };
 
 Halftone.prototype.render = function() {
