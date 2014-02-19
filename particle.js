@@ -53,7 +53,7 @@ Particle.prototype.render = function( ctx, color ) {
 
 Particle.prototype.applyOriginAttraction = function() {
   var attraction = Vector.subtract( this.position, this.origin );
-  attraction.scale( -0.01 );
+  attraction.scale( -0.02 );
   this.applyForce( attraction );
 };
 

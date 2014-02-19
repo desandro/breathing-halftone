@@ -161,7 +161,7 @@ Halftone.prototype.animate = function() {
 
 Halftone.prototype.update = function() {
   // var force = new Vector( 0.0, 0.4 );
-  var displacement = 150
+  var displacement = 180
   var particles = this.particles.red.concat( this.particles.green )
     .concat( this.particles.blue );
   for ( var i=0, len = particles.length; i < len; i++ ) {
@@ -169,7 +169,7 @@ Halftone.prototype.update = function() {
     if ( this.isMousedown ) {
       var force = Vector.subtract( particle.position, this.cursorPosition );
       var scale = Math.max( 0, displacement - force.getMagnitude() ) / displacement;
-      force.scale( scale * 0.01 );
+      force.scale( scale * 0.05 );
       particle.applyForce( force );
     }
 
@@ -324,7 +324,7 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
     parent: this,
     origin: new Vector( x2, y2 ),
     naturalSize: gridSize * ROOT_2 / 2,
-    friction: 0.05
+    friction: 0.1
   });
 
 };
