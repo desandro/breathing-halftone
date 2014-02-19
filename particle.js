@@ -26,6 +26,8 @@ Particle.prototype.applyForce = function( force ) {
 };
 
 Particle.prototype.update = function() {
+  this.applyOriginAttraction();
+
   // velocity
   this.velocity.add( this.acceleration );
   this.velocity.scale( 1 - this.friction );
@@ -47,6 +49,12 @@ Particle.prototype.render = function( ctx, color ) {
   ctx.arc( x, y, size, 0, TAU );
   ctx.fill();
   ctx.closePath();
+};
+
+Particle.prototype.applyOriginAttraction = function() {
+  var attraction = Vector.subtract( this.position, this.origin );
+  attraction.scale( -0.01 );
+  this.applyForce( attraction );
 };
 
 Halftone.Particle = Particle;

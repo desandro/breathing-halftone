@@ -32,6 +32,15 @@ Vector.prototype.scale = function( s )  {
   this.y *= s;
 };
 
+Vector.prototype.multiply = function( v ) {
+  this.x *= v.x;
+  this.y *= v.y;
+};
+
+Vector.prototype.getMagnitude = function() {
+  return Math.sqrt( this.x * this.x  + this.y * this.y );
+};
+
 // ----- class functions ----- //
 
 Vector.subtract = function( a, b ) {
