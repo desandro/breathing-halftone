@@ -27,6 +27,8 @@ function insertAfter( elem, afterElem ) {
   }
 }
 
+// --------------------------  -------------------------- //
+
 var _Halftone = window.BreathingHalftone || {};
 var Vector = _Halftone.Vector;
 var Particle = _Halftone.Particle;
@@ -75,7 +77,24 @@ Halftone.prototype.create = function() {
   };
 
   this.getImageData();
+
+  // properties
+  this.canvasPosition = new Vector();
+  this.cursorPosition = new Vector();
+  this.getCanvasPosition();
+
+  this.bindEvents();
+
 };
+
+Halftone.prototype.getCanvasPosition = function() {
+  var rect = this.canvas.getBoundingClientRect();
+  var x = rect.left + window.scrollX;
+  var y = rect.top + window.scrollY;
+  this.canvasPosition.set( x, y );
+};
+
+// -------------------------- img -------------------------- //
 
 Halftone.prototype.getImageData = function( callback ) {
   // hack img load
@@ -141,12 +160,17 @@ Halftone.prototype.animate = function() {
 };
 
 Halftone.prototype.update = function() {
-  var force = new Vector( 0.0, 0.4 );
+  // var force = new Vector( 0.0, 0.4 );
   var particles = this.particles.red.concat( this.particles.green )
     .concat( this.particles.blue );
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
-    particle.applyForce( force );
+    if ( this.isMousedown ) {
+      var force = new Vector( 0.0, 0.4 );
+      particle.applyForce( force );
+    }
+
+    // particle.applyForce( force );
     particle.update();
   }
 };
@@ -297,7 +321,7 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
     parent: this,
     origin: new Vector( x2, y2 ),
     naturalSize: gridSize * ROOT_2 / 2,
-    friction: 0.2
+    friction: 0.05
   });
 
 };
@@ -316,6 +340,65 @@ Halftone.prototype.getPixelData = function( x, y ) {
   };
 };
 
+// ----- bindEvents ----- //
+
+Halftone.prototype.bindEvents = function() {
+  this.canvas.addEventListener( 'mousedown', this, false );
+
+  window.addEventListener( 'mousemove', this, false );
+  window.addEventListener( 'resize', this, false );
+};
+
+Halftone.prototype.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+Halftone.prototype.onmousedown = function() {
+  this.isMousedown = true;
+  window.addEventListener( 'mouseup', this, false );
+};
+
+Halftone.prototype.onmouseup = function() {
+  this.isMousedown = false;
+  window.removeEventListener( 'mouseup', this, false );
+};
+
+Halftone.prototype.onmousemove = function( event ) {
+  // set cursorPositon
+  this.cursorPosition.set( event.pageX, event.pageY );
+  this.cursorPosition.subtract( this.canvasPosition );
+};
+
+function debounceProto( _class, methodName, threshold ) {
+  // original method
+  var method = _class.prototype[ methodName ];
+  var timeoutName = methodName + 'Timeout';
+
+  _class.prototype[ methodName ] = function() {
+    var timeout = this[ timeoutName ];
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    var args = arguments;
+
+    this[ timeoutName ] = setTimeout( function() {
+      method.apply( this, args );
+      delete this[ timeoutName ];
+    }.bind( this ), threshold || 100 );
+  };
+}
+
+Halftone.prototype.onresize = function() {
+  this.getCanvasPosition();
+};
+
+debounceProto( Halftone, 'onresize', 200 );
+
+
+// --------------------------  -------------------------- //
 
 Halftone.Vector = Vector;
 Halftone.Particle = Particle;

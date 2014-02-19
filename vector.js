@@ -22,6 +22,11 @@ Vector.prototype.add = function( v ) {
   this.y += v.y;
 };
 
+Vector.prototype.subtract = function( v ) {
+  this.x -= v.x;
+  this.y -= v.y;
+};
+
 Vector.prototype.scale = function( s )  {
   this.x *= s;
   this.y *= s;
