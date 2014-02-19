@@ -166,14 +166,11 @@ Halftone.prototype.update = function() {
     .concat( this.particles.blue );
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
-    if ( this.isMousedown ) {
-      var force = Vector.subtract( particle.position, this.cursorPosition );
-      var scale = Math.max( 0, displacement - force.getMagnitude() ) / displacement;
-      force.scale( scale * 0.05 );
-      particle.applyForce( force );
-    }
 
-    // particle.applyForce( force );
+    var force = Vector.subtract( particle.position, this.cursorPosition );
+    var scale = Math.max( 0, displacement - force.getMagnitude() ) / displacement;
+    force.scale( scale * ( this.isMousedown ? 0.05 : -0.01 ) );
+    particle.applyForce( force );
     particle.update();
   }
 };
