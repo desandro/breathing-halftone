@@ -121,7 +121,6 @@ Halftone.prototype.onImgLoad = function( callback ) {
   this.height = h;
 
   // console.log( this.imgData.length );
-  // console.log( this.getPixelData( 350, 350 ));
   // set proxy canvases size
   for ( var prop in this.proxyCanvases ) {
     var proxy = this.proxyCanvases[ prop ];
@@ -161,7 +160,7 @@ Halftone.prototype.animate = function() {
 
 Halftone.prototype.update = function() {
   // var force = new Vector( 0.0, 0.4 );
-  var displacement = 180
+  var displacement = 180;
   var particles = this.particles.red.concat( this.particles.green )
     .concat( this.particles.blue );
   for ( var i=0, len = particles.length; i < len; i++ ) {
@@ -308,11 +307,13 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
 
   var gridSize = this.options.gridSize;
 
-  var pixelData = this.getPixelData( x2, y2 );
+  var redValue = this.getPixelChannelValue( x2, y2, 'red' );
+  var greenValue = this.getPixelChannelValue( x2, y2, 'green' );
+  var blueValue = this.getPixelChannelValue( x2, y2, 'blue' );
 
   // don't render unecessary dots
-  var totalColor = pixelData.red + pixelData.green + pixelData.blue;
-  var nullColor = this.options.isAdditive ? 0 : 255 * 3;
+  var totalColor = redValue + greenValue + blueValue;
+  var nullColor = this.options.isAdditive ? 0 : 3;
   if ( totalColor === nullColor ) {
     return;
   }
@@ -340,11 +341,25 @@ Halftone.prototype.getPixelData = function( x, y ) {
   };
 };
 
+var channelOffset = {
+  red: 0,
+  green: 1,
+  blue: 2
+};
+
+Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
+  x = Math.round( x / this.options.zoom );
+  y = Math.round( y / this.options.zoom );
+  
+  var pixelIndex = x + y * this.img.width;
+  var index = pixelIndex * 4 + channelOffset[ channel ];
+  return this.imgData[ index ] / 255;
+};
+
 // ----- bindEvents ----- //
 
 Halftone.prototype.bindEvents = function() {
   this.canvas.addEventListener( 'mousedown', this, false );
-
   window.addEventListener( 'mousemove', this, false );
   window.addEventListener( 'resize', this, false );
 };

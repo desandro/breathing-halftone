@@ -18,6 +18,8 @@ function Particle( properties ) {
   this.parent = properties.parent;
   this.friction = properties.friction;
   this.position = Vector.copy( this.origin );
+  this.position.x += Math.random() * 100 - 50;
+  this.position.y += Math.random() * 100 - 50;
   this.velocity = new Vector();
   this.acceleration = new Vector();
   this.sizeVelocity = 0;
@@ -53,26 +55,21 @@ Particle.prototype.render = function( ctx, color ) {
 
 Particle.prototype.calculateSize = function( color ) {
 
-  // var x = this.position.x;
-  // var y = this.position.y;
-  // var colorSize = this.parent.getPixelData( x, y )[ color ] / 255;
-  // if ( !this.parent.options.isAdditive ) {
-  //   colorSize = 1 - colorSize;
-  // }
   var targetSize = this.naturalSize * this.getColorValue( this.position, color );
   
-  var sizeAcceleration = (targetSize - this.size) * 0.4;
+  var sizeAcceleration = (targetSize - this.size) * 0.3;
   this.sizeVelocity += sizeAcceleration;
   // friction
-  this.sizeVelocity *= ( 1 - 0.4 );
+  this.sizeVelocity *= ( 1 - 0.3 );
   this.size += this.sizeVelocity;
-  this.size = this.size;
-  // this.size = targetSize;
+
+  // keep original size
+  // this.size = this.naturalSize * this.getColorValue( this.origin, color );
 };
 
 Particle.prototype.getColorValue = function( position, color ) {
 
-  var colorValue = this.parent.getPixelData( position.x, position.y )[ color ] / 255;
+  var colorValue = this.parent.getPixelChannelValue( position.x, position.y, color );
   colorValue = colorValue || 0;
   if ( !this.parent.options.isAdditive ) {
     colorValue = 1 - colorValue;
