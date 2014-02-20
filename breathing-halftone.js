@@ -195,8 +195,9 @@ Halftone.prototype.render = function() {
 Halftone.prototype.renderGrid = function( color ) {
   var proxy = this.proxyCanvases[ color ];
 
-  proxy.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
-  proxy.ctx.fillRect( 0, 0, this.width, this.height );
+  // proxy.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
+  // proxy.ctx.fillRect( 0, 0, this.width, this.height );
+  proxy.ctx.clearRect( 0, 0, this.width, this.height );
 
   // set fill color
   proxy.ctx.fillStyle = {
