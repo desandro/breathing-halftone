@@ -27,6 +27,23 @@ function insertAfter( elem, afterElem ) {
   }
 }
 
+var isCanvasSupported = (function() {
+  var isSupported;
+
+  function checkCanvasSupport() {
+    if ( isFinite( isSupported ) ) {
+      return isSupported;
+    }
+
+    var canvas = document.createElement('canvas');
+    isSupported = !!( canvas.getContext && canvas.getContext('2d') );
+    return isSupported;
+  }
+
+  return checkCanvasSupport;
+})();
+
+
 // --------------------------  -------------------------- //
 
 var _Halftone = window.BreathingHalftone || {};
@@ -36,16 +53,27 @@ var Particle = _Halftone.Particle;
 // -------------------------- BreathingHalftone -------------------------- //
 
 function Halftone( img, options ) {
+
   this.options = extend( {}, this.constructor.defaults );
   this.options = extend( this.options, options );
   this.img = img;
+  // bail if canvas is not supported
+  if ( !isCanvasSupported() ) {
+    return;
+  }
+
   this.create();
 }
 
 Halftone.defaults = {
   gridSize: 20,
   zoom: 1,
-  isAdditive: true
+  isAdditive: true,
+  channels: [
+    'red',
+    'green',
+    'blue'
+  ]
 };
 
 function makeCanvasAndCtx() {
@@ -186,9 +214,13 @@ Halftone.prototype.render = function() {
 
   // composite grids
   this.ctx.globalCompositeOperation = this.options.isAdditive ? 'lighter' : 'darker';
-  this.renderGrid('red');
-  this.renderGrid('green');
-  this.renderGrid('blue');
+
+  // render channels
+  var channels = this.options.channels;
+  for ( var i=0, len = channels.length; i < len; i++ ) {
+    var channel = channels[i];
+    this.renderGrid( channel );
+  }
 
 };
 
@@ -351,7 +383,7 @@ var channelOffset = {
 Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
   x = Math.round( x / this.options.zoom );
   y = Math.round( y / this.options.zoom );
-  
+
   var pixelIndex = x + y * this.img.width;
   var index = pixelIndex * 4 + channelOffset[ channel ];
   return this.imgData[ index ] / 255;
