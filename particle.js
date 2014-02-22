@@ -30,10 +30,10 @@ function Particle( properties ) {
   this.acceleration = new Vector();
   this.sizeVelocity = 0;
 
-  var center = new Vector( this.parent.width / 2, this.parent.height / 2 );
-  center.subtract( this.origin )
-  this.oscillationOffset = center.getMagnitude() / 50;
-  // this.oscillationOffset = Math.random() * TAU;
+  // var center = new Vector( this.parent.width / 2, this.parent.height / 2 );
+  // center.subtract( this.origin )
+  // this.oscillationOffset = center.getMagnitude() / 50;
+  this.oscillationOffset = Math.random() * TAU;
   this.oscillationMagnitude = Math.random();
 }
 
@@ -63,7 +63,7 @@ Particle.prototype.render = function( ctx, color ) {
   var now = getNow();
   var oscSize = (now / (1000 * 3)) * TAU * -1;
   oscSize = Math.cos( oscSize + this.oscillationOffset );
-  oscSize *= this.naturalSize * this.oscillationMagnitude * 0.15;
+  oscSize *= this.naturalSize * this.oscillationMagnitude * 0.2;
   var size = Math.abs( this.size ) + oscSize;
 
   ctx.beginPath();
