@@ -22,7 +22,12 @@ window.onload = function() {
     zoom: 1.5,
     gridSize: 20,
     isAdditive: false,
-    isRadial: false
+    isRadial: false,
+    friction: 0.05,
+    displacement: {
+      hoverForce: -0.001,
+      hoverRadius: 0.3
+    }
   });
 };
 

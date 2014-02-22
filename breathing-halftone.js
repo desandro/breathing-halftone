@@ -53,9 +53,10 @@ var Particle = _Halftone.Particle;
 // -------------------------- BreathingHalftone -------------------------- //
 
 function Halftone( img, options ) {
-
-  this.options = extend( {}, this.constructor.defaults );
+  var defaults = this.constructor.defaults;
+  this.options = extend( {}, defaults );
   this.options = extend( this.options, options );
+  this.options.displacement = extend( defaults.displacement, options.displacement );
   this.img = img;
   // bail if canvas is not supported
   if ( !isCanvasSupported() ) {
@@ -73,7 +74,14 @@ Halftone.defaults = {
     'red',
     'green',
     'blue'
-  ]
+  ],
+  friction: 0.1,
+  displacement: {
+    hoverRadius: 1/7,
+    hoverForce: -0.01,
+    activeRadius: 1/7,
+    activeForce: 0.05
+  }
 };
 
 function makeCanvasAndCtx() {
@@ -147,6 +155,7 @@ Halftone.prototype.onImgLoad = function( callback ) {
 
   this.width = w;
   this.height = h;
+  this.diagonal = Math.sqrt( w*w + h*h );
 
   // console.log( this.imgData.length );
   // set proxy canvases size
@@ -187,16 +196,19 @@ Halftone.prototype.animate = function() {
 };
 
 Halftone.prototype.update = function() {
-  // var force = new Vector( 0.0, 0.4 );
-  var displacement = 180;
+  var displaceOpts = this.options.displacement;
+  var forceScale = this.isMousedown ? displaceOpts.activeForce : displaceOpts.hoverForce;
+  var radius = this.isMousedown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
+  radius *= this.diagonal;
   var particles = this.particles.red.concat( this.particles.green )
     .concat( this.particles.blue );
+
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
 
     var force = Vector.subtract( particle.position, this.cursorPosition );
-    var scale = Math.max( 0, displacement - force.getMagnitude() ) / displacement;
-    force.scale( scale * ( this.isMousedown ? 0.05 : -0.01 ) );
+    var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
+    force.scale( scale * forceScale );
     particle.applyForce( force );
     particle.update();
   }
@@ -355,7 +367,7 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
     parent: this,
     origin: new Vector( x2, y2 ),
     naturalSize: gridSize * ROOT_2 / 2,
-    friction: 0.1
+    friction: this.options.friction
   });
 
 };
