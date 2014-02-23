@@ -94,6 +94,10 @@ Halftone.defaults = {
     hoverForce: -0.01,
     activeRadius: 1/7,
     activeForce: 0.05
+  },
+  dotSizeOsc: {
+    period: 3,
+    delta: 0.2
   }
 };
 

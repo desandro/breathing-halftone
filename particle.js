@@ -54,20 +54,18 @@ Particle.prototype.update = function() {
 };
 
 Particle.prototype.render = function( ctx, color ) {
-  var x = this.position.x;
-  var y = this.position.y;
-
   this.calculateSize( color );
 
   // oscillation size
   var now = getNow();
-  var oscSize = (now / (1000 * 3)) * TAU * -1;
+  var oscOpts = this.parent.options.dotSizeOsc;
+  var oscSize = (now / (1000 * oscOpts.period)) * TAU;
   oscSize = Math.cos( oscSize + this.oscillationOffset );
-  oscSize *= this.naturalSize * this.oscillationMagnitude * 0.2;
+  oscSize *= this.naturalSize * this.oscillationMagnitude * oscOpts.delta;
   var size = Math.abs( this.size ) + oscSize;
 
   ctx.beginPath();
-  ctx.arc( x, y, Math.abs( size ), 0, TAU );
+  ctx.arc( this.position.x, this.position.y, Math.abs( size ), 0, TAU );
   ctx.fill();
   ctx.closePath();
 };
