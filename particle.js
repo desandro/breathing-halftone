@@ -24,7 +24,7 @@ function Particle( properties ) {
   this.friction = properties.friction;
   this.position = Vector.copy( this.origin );
   this.naturalSize = properties.naturalSize;
-  this.size = properties.naturalSize;
+  this.size = 0;
   // this.position.x += Math.random() * 100 - 50;
   // this.position.y += Math.random() * 100 - 50;
   this.velocity = new Vector();
@@ -52,21 +52,16 @@ Particle.prototype.update = function() {
   this.position.add( this.velocity );
   // reset acceleration
   this.acceleration.set( 0, 0 );
+
+  this.calculateSize();
 };
 
-Particle.prototype.render = function( ctx, color ) {
-  this.calculateSize( color );
+Particle.prototype.render = function( ctx ) {
 
-  // oscillation size
-  var now = getNow();
-  var oscOpts = this.parent.options.dotSizeOsc;
-  var oscSize = (now / (1000 * oscOpts.period)) * TAU;
-  oscSize = Math.cos( oscSize + this.oscillationOffset );
-  oscSize *= this.naturalSize * this.oscillationMagnitude * oscOpts.delta;
-  var size = Math.abs( this.size ) + oscSize;
 
+  var size = Math.max( 0, this.size + this.oscSize );
   ctx.beginPath();
-  ctx.arc( this.position.x, this.position.y, Math.abs( size ), 0, TAU );
+  ctx.arc( this.position.x, this.position.y, size, 0, TAU );
   ctx.fill();
   ctx.closePath();
 };
@@ -81,11 +76,13 @@ Particle.prototype.calculateSize = function() {
   this.sizeVelocity *= ( 1 - 0.3 );
   this.size += this.sizeVelocity;
 
-
-  // this.size *= oscSize;
-
-  // keep original size
-  // this.size = this.naturalSize * this.getColorValue( this.origin, color );
+  // oscillation size
+  var now = getNow();
+  var oscOpts = this.parent.options.dotSizeOsc;
+  var oscSize = ( now / ( 1000 * oscOpts.period ) ) * TAU;
+  oscSize = Math.cos( oscSize + this.oscillationOffset );
+  oscSize *= this.naturalSize * this.oscillationMagnitude * oscOpts.delta;
+  this.oscSize = oscSize;
 };
 
 Particle.prototype.getChannelValue = function() {
