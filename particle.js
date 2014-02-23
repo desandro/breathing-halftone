@@ -22,13 +22,13 @@ function Particle( properties ) {
   this.origin = properties.origin;
   this.parent = properties.parent;
   this.friction = properties.friction;
-  // this.position = Vector.copy( this.origin );
-  this.position = new Vector( this.parent.width / 2, this.parent.height / 2 );
+  this.position = Vector.copy( this.origin );
+  // this.position.y += this.parent.diagonal * 0.01;
   this.naturalSize = properties.naturalSize;
   this.size = 0;
   this.oscSize = 0;
-  // this.position.x += Math.random() * 100 - 50;
-  // this.position.y += Math.random() * 100 - 50;
+  this.initSize = 0;
+  this.initSizeVelocity = ( Math.random() * 0.5 + 0.5 ) * 0.02;
   this.velocity = new Vector();
   this.acceleration = new Vector();
   this.sizeVelocity = 0;
@@ -67,8 +67,9 @@ Particle.prototype.update = function() {
 
 Particle.prototype.render = function( ctx ) {
 
-
-  var size = Math.max( 0, this.size + this.oscSize );
+  var size = this.size + this.oscSize;
+  size *= this.initSize;
+  size = Math.max( 0, size );
   ctx.beginPath();
   ctx.arc( this.position.x, this.position.y, size, 0, TAU );
   ctx.fill();
@@ -76,6 +77,11 @@ Particle.prototype.render = function( ctx ) {
 };
 
 Particle.prototype.calculateSize = function() {
+
+  if ( this.initSize !== 1 ) {
+    this.initSize += this.initSizeVelocity;
+    this.initSize = Math.min( 1, this.initSize );
+  }
 
   var targetSize = this.naturalSize * this.getChannelValue();
 
