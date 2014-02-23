@@ -22,9 +22,11 @@ function Particle( properties ) {
   this.origin = properties.origin;
   this.parent = properties.parent;
   this.friction = properties.friction;
-  this.position = Vector.copy( this.origin );
+  // this.position = Vector.copy( this.origin );
+  this.position = new Vector( this.parent.width / 2, this.parent.height / 2 );
   this.naturalSize = properties.naturalSize;
   this.size = 0;
+  this.oscSize = 0;
   // this.position.x += Math.random() * 100 - 50;
   // this.position.y += Math.random() * 100 - 50;
   this.velocity = new Vector();
@@ -36,6 +38,7 @@ function Particle( properties ) {
   // this.oscillationOffset = center.getMagnitude() / 50;
   this.oscillationOffset = Math.random() * TAU;
   this.oscillationMagnitude = Math.random();
+  this.isVisible = false;
 }
 
 Particle.prototype.applyForce = function( force ) {
@@ -43,6 +46,12 @@ Particle.prototype.applyForce = function( force ) {
 };
 
 Particle.prototype.update = function() {
+
+  if ( !this.isVisible && Math.random() > 0.03 ) {
+    return;
+  }
+  this.isVisible = true;
+
   this.applyOriginAttraction();
 
   // velocity

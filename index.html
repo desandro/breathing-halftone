@@ -19,18 +19,21 @@
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   new BreathingHalftone( img, {
-    zoom: 1,
-    gridSize: 20,
+    zoom: 1.0,
+    gridSize: 15,
     isAdditive: false,
     isRadial: false,
-    friction: 0.2,
+    friction: 0.1,
     // isChannelLens: false,
     // channels: [ 'green', 'blue' ],
+    dotSizeOsc: {
+      delta: 0
+    },
     displacement: {
       // hoverForce: 0,
       // hoverRadius: 0.3,
       // activeRadius: 0.3,
-      // activeForce: -0.02
+      // activeForce: 0.2
     }
   });
 };
