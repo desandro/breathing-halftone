@@ -19,13 +19,13 @@ var Vector = Halftone.Vector;
 
 function Particle( properties ) {
   this.origin = properties.origin;
-  this.naturalSize = properties.naturalSize;
-  this.size = properties.naturalSize;
   this.parent = properties.parent;
   this.friction = properties.friction;
   this.position = Vector.copy( this.origin );
-  this.position.x += Math.random() * 100 - 50;
-  this.position.y += Math.random() * 100 - 50;
+  this.naturalSize = properties.naturalSize;
+  this.size = properties.naturalSize;
+  // this.position.x += Math.random() * 100 - 50;
+  // this.position.y += Math.random() * 100 - 50;
   this.velocity = new Vector();
   this.acceleration = new Vector();
   this.sizeVelocity = 0;
@@ -90,8 +90,17 @@ Particle.prototype.calculateSize = function( color ) {
 };
 
 Particle.prototype.getColorValue = function( position, color ) {
+  var colorValue;
+  // return origin channel value if not lens
+  if ( this.parent.options.isChannelLens ) {
+    colorValue = this.parent.getPixelChannelValue( position.x, position.y, color );
+  } else {
+    if ( !this.originChannelValue ) {
+      this.originChannelValue = this.parent.getPixelChannelValue( this.origin.x, this.origin.y, color );
+    }
+    colorValue = this.originChannelValue;
+  }
 
-  var colorValue = this.parent.getPixelChannelValue( position.x, position.y, color );
   colorValue = colorValue || 0;
   if ( !this.parent.options.isAdditive ) {
     colorValue = 1 - colorValue;

@@ -75,6 +75,7 @@ Halftone.defaults = {
     'green',
     'blue'
   ],
+  isChannelLens: true,
   friction: 0.1,
   displacement: {
     hoverRadius: 1/7,
@@ -196,6 +197,7 @@ Halftone.prototype.animate = function() {
 };
 
 Halftone.prototype.update = function() {
+  // displace particles with cursors (mouse, touches)
   var displaceOpts = this.options.displacement;
   var forceScale = this.isMousedown ? displaceOpts.activeForce : displaceOpts.hoverForce;
   var radius = this.isMousedown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
@@ -208,6 +210,8 @@ Halftone.prototype.update = function() {
 
     var force = Vector.subtract( particle.position, this.cursorPosition );
     var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
+    // scale = Math.cos( scale );
+    scale = Math.cos( (1 - scale) * Math.PI ) * 0.5 + 0.5;
     force.scale( scale * forceScale );
     particle.applyForce( force );
     particle.update();
@@ -416,7 +420,8 @@ Halftone.prototype.handleEvent = function( event ) {
   }
 };
 
-Halftone.prototype.onmousedown = function() {
+Halftone.prototype.onmousedown = function( event ) {
+  event.preventDefault();
   this.isMousedown = true;
   window.addEventListener( 'mouseup', this, false );
 };
