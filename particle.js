@@ -18,6 +18,7 @@ var Vector = Halftone.Vector;
 // -------------------------- Particle -------------------------- //
 
 function Particle( properties ) {
+  this.channel = properties.channel;
   this.origin = properties.origin;
   this.parent = properties.parent;
   this.friction = properties.friction;
@@ -70,9 +71,9 @@ Particle.prototype.render = function( ctx, color ) {
   ctx.closePath();
 };
 
-Particle.prototype.calculateSize = function( color ) {
+Particle.prototype.calculateSize = function() {
 
-  var targetSize = this.naturalSize * this.getColorValue( this.position, color );
+  var targetSize = this.naturalSize * this.getChannelValue();
 
   var sizeAcceleration = (targetSize - this.size) * 0.3;
   this.sizeVelocity += sizeAcceleration;
@@ -87,23 +88,24 @@ Particle.prototype.calculateSize = function( color ) {
   // this.size = this.naturalSize * this.getColorValue( this.origin, color );
 };
 
-Particle.prototype.getColorValue = function( position, color ) {
-  var colorValue;
+Particle.prototype.getChannelValue = function() {
+  var channelValue;
   // return origin channel value if not lens
+  var position = this.parent.options.isChannelLens ? this.position : this.origin;
   if ( this.parent.options.isChannelLens ) {
-    colorValue = this.parent.getPixelChannelValue( position.x, position.y, color );
+    channelValue = this.parent.getPixelChannelValue( position.x, position.y, this.channel );
   } else {
     if ( !this.originChannelValue ) {
-      this.originChannelValue = this.parent.getPixelChannelValue( this.origin.x, this.origin.y, color );
+      this.originChannelValue = this.parent.getPixelChannelValue( position.x, position.y, this.channel );
     }
-    colorValue = this.originChannelValue;
+    channelValue = this.originChannelValue;
   }
 
-  colorValue = colorValue || 0;
+  channelValue = channelValue || 0;
   if ( !this.parent.options.isAdditive ) {
-    colorValue = 1 - colorValue;
+    channelValue = 1 - channelValue;
   }
-  return colorValue;
+  return channelValue;
 };
 
 Particle.prototype.applyOriginAttraction = function() {

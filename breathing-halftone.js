@@ -199,9 +199,9 @@ Halftone.prototype.initParticles = function() {
 
   // separate array of particles for each color
   this.particles = {
-    red: this[ getParticlesMethod ]( 1 ),
-    green: this[ getParticlesMethod ]( 2.5 ),
-    blue: this[ getParticlesMethod ]( 5 )
+    red: this[ getParticlesMethod ]( 'red', 1 ),
+    green: this[ getParticlesMethod ]( 'green', 2.5 ),
+    blue: this[ getParticlesMethod ]( 'blue', 5 )
   };
 
 };
@@ -289,7 +289,7 @@ Halftone.prototype.renderGrid = function( color ) {
 
 };
 
-Halftone.prototype.getCartesianGridParticles = function( angle ) {
+Halftone.prototype.getCartesianGridParticles = function( channel, angle ) {
   var particles = [];
 
   var w = this.width;
@@ -318,7 +318,7 @@ Halftone.prototype.getCartesianGridParticles = function( angle ) {
       x2 += w / 2;
       y2 += h / 2;
 
-      var particle = this.initParticle( x2, y2 );
+      var particle = this.initParticle( channel, x2, y2 );
       if ( particle ) {
         particles.push( particle );
       }
@@ -328,7 +328,7 @@ Halftone.prototype.getCartesianGridParticles = function( angle ) {
   return particles;
 };
 
-Halftone.prototype.getRadialGridParticles = function( angle ) {
+Halftone.prototype.getRadialGridParticles = function( channel, angle ) {
   var particles = [];
 
   var w = this.width;
@@ -351,7 +351,7 @@ Halftone.prototype.getRadialGridParticles = function( angle ) {
       var theta = TAU * j / max + angle;
       var x = centerX + Math.cos( theta ) * level * gridSize;
       var y = centerY + Math.sin( theta ) * level * gridSize;
-      var particle = this.initParticle( x, y );
+      var particle = this.initParticle( channel, x, y );
       if ( particle ) {
         particles.push( particle );
       }
@@ -362,7 +362,7 @@ Halftone.prototype.getRadialGridParticles = function( angle ) {
 
 };
 
-Halftone.prototype.initParticle = function( x2, y2 ) {
+Halftone.prototype.initParticle = function( channel, x2, y2 ) {
   var w = this.canvas.width;
   var h = this.canvas.height;
   // don't render if coords are outside image
@@ -384,6 +384,7 @@ Halftone.prototype.initParticle = function( x2, y2 ) {
   }
 
   return new Particle({
+    channel: channel,
     parent: this,
     origin: new Vector( x2, y2 ),
     naturalSize: gridSize * ROOT_2 / 2,
