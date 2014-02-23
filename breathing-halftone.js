@@ -9,10 +9,21 @@ var ROOT_2 = Math.sqrt( 2 );
 
 // ----- helpers ----- //
 
+var objToString = Object.prototype.toString;
+function isArray( obj ) {
+  return objToString.call( obj ) === '[object Array]';
+}
+
 // extend objects
-function extend( a, b ) {
+function extend( a, b, isDeep ) {
   for ( var prop in b ) {
-    a[ prop ] = b[ prop ];
+    var value = b[ prop ];
+    if ( isDeep && typeof value === 'object' && !isArray( value )  ) {
+      // deep extend
+      a[ prop ] = extend( a[ prop ] || {}, value, true );
+    } else {
+      a[ prop ] = value;
+    }
   }
   return a;
 }
@@ -53,10 +64,11 @@ var Particle = _Halftone.Particle;
 // -------------------------- BreathingHalftone -------------------------- //
 
 function Halftone( img, options ) {
-  var defaults = this.constructor.defaults;
-  this.options = extend( {}, defaults );
-  this.options = extend( this.options, options );
-  this.options.displacement = extend( defaults.displacement, options.displacement );
+  // var defaults = this.constructor.defaults;
+  // this.options = {};
+  this.options = extend( {}, this.constructor.defaults, true );
+  extend( this.options, options, true );
+  // this.options.displacement = extend( defaults.displacement, options.displacement );
   this.img = img;
   // bail if canvas is not supported
   if ( !isCanvasSupported() ) {
