@@ -123,11 +123,11 @@ Halftone.prototype.create = function() {
   // this.img.parentNode.insertBefore();
 
   // create separate canvases for each color
-  this.proxyCanvases = {
-    red: makeCanvasAndCtx(),
-    green: makeCanvasAndCtx(),
-    blue: makeCanvasAndCtx()
-  };
+  this.proxyCanvases = {};
+  for ( var i=0, len = this.options.channels.length; i < len; i++ ) {
+    var channel = this.options.channels[i];
+    this.proxyCanvases[ channel ] = makeCanvasAndCtx();
+  }
 
   this.getImageData();
 
@@ -266,12 +266,14 @@ var channelFillStyles = {
   additive: {
     red: '#FF0000',
     green: '#00FF00',
-    blue: '#0000FF'
+    blue: '#0000FF',
+    lum: '#FFFFFF'
   },
   subtractive: {
     red: '#00FFFF',
     green: '#FF00FF',
-    blue: '#FFFF00'
+    blue: '#FFFF00',
+    lum: '#000000'
   }
 };
 
@@ -400,20 +402,6 @@ Halftone.prototype.initParticle = function( channel, x2, y2 ) {
 
 };
 
-Halftone.prototype.getPixelData = function( x, y ) {
-
-  x = Math.round( x / this.options.zoom );
-  y = Math.round( y / this.options.zoom );
-  var pixelIndex = x + y * this.img.width;
-  pixelIndex *= 4;
-  return {
-    red: this.imgData[ pixelIndex + 0 ],
-    green: this.imgData[ pixelIndex + 1 ],
-    blue: this.imgData[ pixelIndex + 2 ],
-    alpha: this.imgData[ pixelIndex + 3 ]
-  };
-};
-
 var channelOffset = {
   red: 0,
   green: 1,
@@ -424,9 +412,27 @@ Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
   x = Math.round( x / this.options.zoom );
   y = Math.round( y / this.options.zoom );
 
-  var pixelIndex = x + y * this.img.width;
-  var index = pixelIndex * 4 + channelOffset[ channel ];
-  return this.imgData[ index ] / 255;
+  var pixelIndex = ( x + y * this.img.width ) * 4;
+  // return 1;
+  if ( channel === 'lum' ) {
+    return this.getPixelLum( pixelIndex );
+  } else {
+    // rgb
+    var index = pixelIndex + channelOffset[ channel ];
+    return this.imgData[ index ] / 255;
+  }
+};
+
+Halftone.prototype.getPixelLum = function( pixelIndex ) {
+  // thx @jfsiii
+  // https://github.com/jfsiii/chromath/blob/master/src/chromath.js
+  var r = this.imgData[ pixelIndex + 0 ] / 255;
+  var g = this.imgData[ pixelIndex + 1 ] / 255;
+  var b = this.imgData[ pixelIndex + 2 ] / 255;
+  var max = Math.max( r, g, b );
+  var min = Math.max( r, g, b );
+  // return ( max + min ) / 2;
+  return 1;
 };
 
 // ----- bindEvents ----- //
