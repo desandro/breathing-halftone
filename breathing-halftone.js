@@ -256,29 +256,31 @@ Halftone.prototype.render = function() {
 
 };
 
-Halftone.prototype.renderGrid = function( color ) {
-  var proxy = this.proxyCanvases[ color ];
+var channelFillStyles = {
+  additive: {
+    red: '#FF0000',
+    green: '#00FF00',
+    blue: '#0000FF'
+  },
+  subtractive: {
+    red: '#00FFFF',
+    green: '#FF00FF',
+    blue: '#FFFF00'
+  }
+};
 
-  // proxy.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
-  // proxy.ctx.fillRect( 0, 0, this.width, this.height );
-  proxy.ctx.clearRect( 0, 0, this.width, this.height );
+Halftone.prototype.renderGrid = function( channel ) {
+  var proxy = this.proxyCanvases[ channel ];
+  // clear
+  proxy.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
+  proxy.ctx.fillRect( 0, 0, this.width, this.height );
 
   // set fill color
-  proxy.ctx.fillStyle = {
-    additive: {
-      red: '#FF0000',
-      green: '#00FF00',
-      blue: '#0000FF'
-    },
-    subtractive: {
-      red: '#00FFFF',
-      green: '#FF00FF',
-      blue: '#FFFF00'
-    }
-  }[ this.options.isAdditive ? 'additive' : 'subtractive' ][ color ];
+  var blend = this.options.isAdditive ? 'additive' : 'subtractive';
+  proxy.ctx.fillStyle = channelFillStyles[ blend ][ channel ];
 
-  var particles = this.particles[ color ];
-
+  // render particles
+  var particles = this.particles[ channel ];
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
     particle.render( proxy.ctx );
@@ -286,7 +288,6 @@ Halftone.prototype.renderGrid = function( color ) {
 
   // draw proxy canvas to actual canvas as whole layer
   this.ctx.drawImage( proxy.canvas, 0, 0 );
-
 };
 
 Halftone.prototype.getCartesianGridParticles = function( channel, angle ) {
