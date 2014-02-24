@@ -281,7 +281,7 @@ Halftone.prototype.renderGrid = function( color ) {
 
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
-    particle.render( proxy.ctx, color );
+    particle.render( proxy.ctx );
   }
 
   // draw proxy canvas to actual canvas as whole layer
