@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <h1>breathing halftone</h1>
+  <!-- <h1>breathing halftone</h1> -->
 
   <img id="breathing-halftone" src="img/brother1.jpg" />
 
@@ -19,15 +19,15 @@
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   new BreathingHalftone( img, {
-    zoom: 1.0,
-    gridSize: 15,
+    zoom: 1.2,
+    gridSize: 12,
     isAdditive: false,
     isRadial: false,
-    friction: 0.1,
+    // friction: 0.1,
     // isChannelLens: false,
-    // channels: [ 'green', 'blue' ],
+    // channels: [ 'green', 'red' ],
     dotSizeOsc: {
-      delta: 0
+      delta: 0.2
     },
     displacement: {
       // hoverForce: 0,

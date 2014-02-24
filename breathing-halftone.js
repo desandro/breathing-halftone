@@ -223,7 +223,7 @@ Halftone.prototype.update = function() {
 
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
-
+    // cursor interaction
     var force = Vector.subtract( particle.position, this.cursorPosition );
     var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
     // scale = Math.cos( scale );
