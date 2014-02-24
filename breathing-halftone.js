@@ -197,12 +197,22 @@ Halftone.prototype.initParticles = function() {
   var getParticlesMethod = this.options.isRadial ?
     'getRadialGridParticles' : 'getCartesianGridParticles';
 
+  // all particles
+  this.particles = [];
   // separate array of particles for each color
-  this.particles = {
-    red: this[ getParticlesMethod ]( 'red', 1 ),
-    green: this[ getParticlesMethod ]( 'green', 2.5 ),
-    blue: this[ getParticlesMethod ]( 'blue', 5 )
-  };
+  this.channelParticles = {};
+
+  var angles = { red: 1, green: 2.5, blue: 5 };
+
+  for ( var i=0, len = this.options.channels.length; i < len; i++ ) {
+    var channel = this.options.channels[i];
+    var angle = angles[ channel ];
+    var particles = this[ getParticlesMethod ]( channel, angle );
+    // associate with channel
+    this.channelParticles[ channel ] = particles;
+    // add to all collection
+    this.particles = this.particles.concat( particles );
+  }
 
 };
 
@@ -218,11 +228,11 @@ Halftone.prototype.update = function() {
   var forceScale = this.isMousedown ? displaceOpts.activeForce : displaceOpts.hoverForce;
   var radius = this.isMousedown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
   radius *= this.diagonal;
-  var particles = this.particles.red.concat( this.particles.green )
-    .concat( this.particles.blue );
 
-  for ( var i=0, len = particles.length; i < len; i++ ) {
-    var particle = particles[i];
+  // console.log( this.particles[0] );
+
+  for ( var i=0, len = this.particles.length; i < len; i++ ) {
+    var particle = this.particles[i];
     // cursor interaction
     var force = Vector.subtract( particle.position, this.cursorPosition );
     var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
@@ -235,14 +245,10 @@ Halftone.prototype.update = function() {
 };
 
 Halftone.prototype.render = function() {
-  // this.ctx.drawImage( this.img, 0, 0 );
-
-  // black out
+  // clear
   this.ctx.globalCompositeOperation = 'source-over';
   this.ctx.fillStyle = this.options.isAdditive ? 'black' : 'white';
-  var w = this.width;
-  var h = this.height;
-  this.ctx.fillRect( 0, 0, w, h );
+  this.ctx.fillRect( 0, 0, this.width, this.height );
 
   // composite grids
   this.ctx.globalCompositeOperation = this.options.isAdditive ? 'lighter' : 'darker';
@@ -280,7 +286,7 @@ Halftone.prototype.renderGrid = function( channel ) {
   proxy.ctx.fillStyle = channelFillStyles[ blend ][ channel ];
 
   // render particles
-  var particles = this.particles[ channel ];
+  var particles = this.channelParticles[ channel ];
   for ( var i=0, len = particles.length; i < len; i++ ) {
     var particle = particles[i];
     particle.render( proxy.ctx );
