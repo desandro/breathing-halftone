@@ -88,13 +88,14 @@ Halftone.defaults = {
     'blue'
   ],
   isChannelLens: true,
-  friction: 0.1,
+  friction: 0.06,
   displacement: {
-    hoverRadius: 1/7,
-    hoverForce: -0.01,
-    activeRadius: 1/7,
-    activeForce: 0.05
+    hoverRadius: 0.15,
+    hoverForce: -0.02,
+    activeRadius: 0.3,
+    activeForce: 0.01
   },
+  dotThreshold: 0.05,
   dotSizeOsc: {
     period: 3,
     delta: 0.2
@@ -377,16 +378,13 @@ Halftone.prototype.initParticle = function( channel, x2, y2 ) {
     return;
   }
 
-  var gridSize = this.options.gridSize;
+  // don't display if under threshold
+  var pixelChannelValue = this.getPixelChannelValue( x2, y2, channel );
+  var isUnderThreshold = this.options.isAdditive ?
+    pixelChannelValue < this.options.dotThreshold :
+    pixelChannelValue > 1 - this.options.dotThreshold;
 
-  var redValue = this.getPixelChannelValue( x2, y2, 'red' );
-  var greenValue = this.getPixelChannelValue( x2, y2, 'green' );
-  var blueValue = this.getPixelChannelValue( x2, y2, 'blue' );
-
-  // don't render unecessary dots
-  var totalColor = redValue + greenValue + blueValue;
-  var nullColor = this.options.isAdditive ? 0 : 3;
-  if ( totalColor === nullColor ) {
+  if ( isUnderThreshold ) {
     return;
   }
 
@@ -394,7 +392,7 @@ Halftone.prototype.initParticle = function( channel, x2, y2 ) {
     channel: channel,
     parent: this,
     origin: new Vector( x2, y2 ),
-    naturalSize: gridSize * ROOT_2 / 2,
+    naturalSize: this.options.gridSize * ROOT_2 / 2,
     friction: this.options.friction
   });
 
