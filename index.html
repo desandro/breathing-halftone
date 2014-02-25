@@ -18,7 +18,7 @@
 <script>
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
-  new BreathingHalftone( img, {
+  var halftone = window.halftone = new BreathingHalftone( img, {
     zoom: 1.2,
     gridSize: 17,
     isAdditive: false,

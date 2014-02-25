@@ -202,7 +202,7 @@ Halftone.prototype.initParticles = function() {
   // separate array of particles for each color
   this.channelParticles = {};
 
-  var angles = { red: 1, green: 2.5, blue: 5 };
+  var angles = { red: 1, green: 2.5, blue: 5, lum: 2.5 };
 
   for ( var i=0, len = this.options.channels.length; i < len; i++ ) {
     var channel = this.options.channels[i];
@@ -228,8 +228,6 @@ Halftone.prototype.update = function() {
   var forceScale = this.isMousedown ? displaceOpts.activeForce : displaceOpts.hoverForce;
   var radius = this.isMousedown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
   radius *= this.diagonal;
-
-  // console.log( this.particles[0] );
 
   for ( var i=0, len = this.particles.length; i < len; i++ ) {
     var particle = this.particles[i];
@@ -267,13 +265,13 @@ var channelFillStyles = {
     red: '#FF0000',
     green: '#00FF00',
     blue: '#0000FF',
-    lum: '#FFFFFF'
+    lum: '#FFF'
   },
   subtractive: {
     red: '#00FFFF',
     green: '#FF00FF',
     blue: '#FFFF00',
-    lum: '#000000'
+    lum: '#000'
   }
 };
 
@@ -430,9 +428,8 @@ Halftone.prototype.getPixelLum = function( pixelIndex ) {
   var g = this.imgData[ pixelIndex + 1 ] / 255;
   var b = this.imgData[ pixelIndex + 2 ] / 255;
   var max = Math.max( r, g, b );
-  var min = Math.max( r, g, b );
-  // return ( max + min ) / 2;
-  return 1;
+  var min = Math.min( r, g, b );
+  return ( max + min ) / 2;
 };
 
 // ----- bindEvents ----- //
