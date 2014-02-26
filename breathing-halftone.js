@@ -195,6 +195,8 @@ Halftone.prototype.onImgLoad = function( callback ) {
   var ctx = imgCanvas.getContext('2d');
   var w = imgCanvas.width = this.img.width;
   var h = imgCanvas.height = this.img.height;
+  this.imgWidth = w;
+  this.imgHeight = h;
   ctx.drawImage( this.img, 0, 0 );
   this.imgData = ctx.getImageData( 0, 0, w, h ).data;
 
@@ -431,11 +433,11 @@ Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
   x = Math.round( x / this.options.zoom );
   y = Math.round( y / this.options.zoom );
 
-  if ( isOutside( x, y, this.img.width, this.img.height ) ) {
+  if ( isOutside( x, y, this.imgWidth, this.imgHeight ) ) {
     return 0;
   }
 
-  var pixelIndex = ( x + y * this.img.width ) * 4;
+  var pixelIndex = ( x + y * this.imgWidth ) * 4;
   var value;
   // return 1;
   if ( channel === 'lum' ) {
