@@ -38,7 +38,7 @@ function insertAfter( elem, afterElem ) {
   }
 }
 
-var isCanvasSupported = (function() {
+var isCanvasSupported = ( function() {
   var isSupported;
 
   function checkCanvasSupport() {
@@ -52,6 +52,31 @@ var isCanvasSupported = (function() {
   }
 
   return checkCanvasSupport;
+})();
+
+// check that darker composite is supported
+var isDarkerSupported = ( function() {
+  var isSupported;
+
+  function checkDarkerSupport() {
+    if ( isFinite( isSupported ) ) {
+      return isSupported;
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    var ctx = canvas.getContext('2d');
+    ctx.globalCompositeOperation = 'darker';
+    ctx.fillStyle = '#F00';
+    ctx.fillRect( 0, 0, 1, 1 );
+    ctx.fillStyle = '#999';
+    ctx.fillRect( 0, 0, 1, 1 );
+    var imgData = ctx.getImageData( 0, 0, 1, 1 ).data;
+    return imgData[0] === 153 && imgData[1] === 0;
+  }
+
+  return checkDarkerSupport;
 })();
 
 
@@ -123,10 +148,17 @@ Halftone.prototype.create = function() {
 
   // this.img.parentNode.insertBefore();
 
+  this.isDarkerSupported = isDarkerSupported();
+  // fall back to lum channel if subtractive and darker isn't supported
+  this.channels = !this.options.isAdditive && !this.isDarkerSupported
+    ? [ 'lum' ] : this.options.channels;
+
+    console.log( this.options.isAdditive,  this.isDarkerSupported, !this.options.isAdditive && !this.isDarkerSupported );
+
   // create separate canvases for each color
   this.proxyCanvases = {};
-  for ( var i=0, len = this.options.channels.length; i < len; i++ ) {
-    var channel = this.options.channels[i];
+  for ( var i=0, len = this.channels.length; i < len; i++ ) {
+    var channel = this.channels[i];
     this.proxyCanvases[ channel ] = makeCanvasAndCtx();
   }
 
@@ -203,10 +235,10 @@ Halftone.prototype.initParticles = function() {
   // separate array of particles for each color
   this.channelParticles = {};
 
-  var angles = { red: 1, green: 2.5, blue: 5, lum: 2.5 };
+  var angles = { red: 1, green: 2.5, blue: 5, lum: 4 };
 
-  for ( var i=0, len = this.options.channels.length; i < len; i++ ) {
-    var channel = this.options.channels[i];
+  for ( var i=0, len = this.channels.length; i < len; i++ ) {
+    var channel = this.channels[i];
     var angle = angles[ channel ];
     var particles = this[ getParticlesMethod ]( channel, angle );
     // associate with channel
@@ -253,9 +285,8 @@ Halftone.prototype.render = function() {
   this.ctx.globalCompositeOperation = this.options.isAdditive ? 'lighter' : 'darker';
 
   // render channels
-  var channels = this.options.channels;
-  for ( var i=0, len = channels.length; i < len; i++ ) {
-    var channel = channels[i];
+  for ( var i=0, len = this.channels.length; i < len; i++ ) {
+    var channel = this.channels[i];
     this.renderGrid( channel );
   }
 
