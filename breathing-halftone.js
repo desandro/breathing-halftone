@@ -399,21 +399,15 @@ Halftone.prototype.getRadialGridParticles = function( channel, angle ) {
 
 };
 
-Halftone.prototype.initParticle = function( channel, x2, y2 ) {
-  var w = this.canvas.width;
-  var h = this.canvas.height;
-  // don't render if coords are outside image
-  if ( x2 < 0 || x2 > w || y2 < 0 || y2 > h ) {
-    return;
-  }
+function isOutside( x, y, w, h ) {
+  return x < 0 || x > w || y < 0 || y > h;
+}
 
+Halftone.prototype.initParticle = function( channel, x2, y2 ) {
+  // don't render if coords are outside image
   // don't display if under threshold
   var pixelChannelValue = this.getPixelChannelValue( x2, y2, channel );
-  var isUnderThreshold = this.options.isAdditive ?
-    pixelChannelValue < this.options.dotThreshold :
-    pixelChannelValue > 1 - this.options.dotThreshold;
-
-  if ( isUnderThreshold ) {
+  if ( pixelChannelValue < this.options.dotThreshold ) {
     return;
   }
 
@@ -436,9 +430,10 @@ var channelOffset = {
 Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
   x = Math.round( x / this.options.zoom );
   y = Math.round( y / this.options.zoom );
-  // var w = this.img.width;
-  // var h = this.img.height;
 
+  if ( isOutside( x, y, this.img.width, this.img.height ) ) {
+    return 0;
+  }
 
   var pixelIndex = ( x + y * this.img.width ) * 4;
   var value;
