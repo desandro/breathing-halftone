@@ -150,10 +150,8 @@ Halftone.prototype.create = function() {
 
   this.isDarkerSupported = isDarkerSupported();
   // fall back to lum channel if subtractive and darker isn't supported
-  this.channels = !this.options.isAdditive && !this.isDarkerSupported
-    ? [ 'lum' ] : this.options.channels;
-
-    console.log( this.options.isAdditive,  this.isDarkerSupported, !this.options.isAdditive && !this.isDarkerSupported );
+  this.channels = !this.options.isAdditive && !this.isDarkerSupported ?
+    [ 'lum' ] : this.options.channels;
 
   // create separate canvases for each color
   this.proxyCanvases = {};
