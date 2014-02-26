@@ -67,7 +67,7 @@ Particle.prototype.update = function() {
 
 Particle.prototype.render = function( ctx ) {
 
-  var size = this.size + this.oscSize;
+  var size = this.size * this.oscSize;
   size *= this.initSize;
   size = Math.max( 0, size );
   ctx.beginPath();
@@ -85,7 +85,8 @@ Particle.prototype.calculateSize = function() {
 
   var targetSize = this.naturalSize * this.getChannelValue();
 
-  var sizeAcceleration = (targetSize - this.size) * 0.3;
+  // use accel/velocity to smooth changes in size
+  var sizeAcceleration = ( targetSize - this.size ) * 0.1;
   this.sizeVelocity += sizeAcceleration;
   // friction
   this.sizeVelocity *= ( 1 - 0.3 );
@@ -96,7 +97,7 @@ Particle.prototype.calculateSize = function() {
   var oscOpts = this.parent.options.dotSizeOsc;
   var oscSize = ( now / ( 1000 * oscOpts.period ) ) * TAU;
   oscSize = Math.cos( oscSize + this.oscillationOffset );
-  oscSize *= this.naturalSize * this.oscillationMagnitude * oscOpts.delta;
+  oscSize = oscSize * oscOpts.delta + 1;
   this.oscSize = oscSize;
 };
 

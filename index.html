@@ -20,16 +20,16 @@
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   var halftone = window.halftone = new BreathingHalftone( img, {
-    zoom: 1.0,
+    zoom: 1.4,
     gridSize: 20,
-    // isAdditive: false,
+    isAdditive: false,
     // isRadial: true,
     // friction: 0.1,
     // isChannelLens: false,
     // channels: [ 'green', 'blue' ],
     // channels: [ 'lum' ],
     dotSizeOsc: {
-      delta: 0.1
+      delta: 0.2
     },
     displacement: {
       // hoverForce: 0,
