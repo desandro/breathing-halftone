@@ -438,16 +438,27 @@ var channelOffset = {
 Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
   x = Math.round( x / this.options.zoom );
   y = Math.round( y / this.options.zoom );
+  // var w = this.img.width;
+  // var h = this.img.height;
+
 
   var pixelIndex = ( x + y * this.img.width ) * 4;
+  var value;
   // return 1;
   if ( channel === 'lum' ) {
-    return this.getPixelLum( pixelIndex );
+    value = this.getPixelLum( pixelIndex );
   } else {
     // rgb
     var index = pixelIndex + channelOffset[ channel ];
-    return this.imgData[ index ] / 255;
+    value = this.imgData[ index ] / 255;
   }
+
+  value = value || 0;
+  if ( !this.options.isAdditive ) {
+    value = 1 - value;
+  }
+
+  return value;
 };
 
 Halftone.prototype.getPixelLum = function( pixelIndex ) {

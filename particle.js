@@ -114,10 +114,6 @@ Particle.prototype.getChannelValue = function() {
     channelValue = this.originChannelValue;
   }
 
-  channelValue = channelValue || 0;
-  if ( !this.parent.options.isAdditive ) {
-    channelValue = 1 - channelValue;
-  }
   return channelValue;
 };
 
