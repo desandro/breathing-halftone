@@ -89,11 +89,10 @@ var Particle = _Halftone.Particle;
 // -------------------------- BreathingHalftone -------------------------- //
 
 function Halftone( img, options ) {
-  // var defaults = this.constructor.defaults;
-  // this.options = {};
+  // set options
   this.options = extend( {}, this.constructor.defaults, true );
   extend( this.options, options, true );
-  // this.options.displacement = extend( defaults.displacement, options.displacement );
+
   this.img = img;
   // bail if canvas is not supported
   if ( !isCanvasSupported() ) {
@@ -145,7 +144,8 @@ Halftone.prototype.create = function() {
   // copy over class
   this.canvas.className = this.img.className;
   insertAfter( this.canvas, this.img );
-  // this.img.style.display = 'none';
+  // hide img visually
+  this.img.style.visibility = 'hidden';
 
   this.isDarkerSupported = isDarkerSupported();
   // fall back to lum channel if subtractive and darker isn't supported
@@ -163,7 +163,8 @@ Halftone.prototype.create = function() {
 
   // properties
   this.canvasPosition = new Vector();
-  this.cursorPosition = new Vector();
+  // position -100,000, -100,000 so its not on screen
+  this.cursorPosition = new Vector( -1e5, -1e5 );
   this.getCanvasPosition();
 
   this.bindEvents();
@@ -182,17 +183,23 @@ Halftone.prototype.getCanvasPosition = function() {
 
 Halftone.prototype.loadImage = function() {
   // hack img load
-  var src = this.img.src;
+  var src = this.img.getAttribute('data-src') || this.img.src;
   var loadingImg = new Image();
   loadingImg.onload = function() {
     this.onImgLoad();
   }.bind( this );
   loadingImg.src = src;
+  // set src on image, so we can get correct sizes
+  if ( this.img.src !== src ) {
+    this.img.src = src;
+  }
 };
 
 Halftone.prototype.onImgLoad = function() {
   this.getImgData();
   this.resizeCanvas();
+  // hide image completely
+  this.img.style.display = 'none';
   this.getCanvasPosition();
   this.initParticles();
   this.animate();
@@ -210,15 +217,14 @@ Halftone.prototype.getImgData = function() {
 };
 
 Halftone.prototype.resizeCanvas = function() {
+  // width & height
   var w = this.width = this.img.offsetWidth;
   var h = this.height = this.img.offsetHeight;
-
-  // console.log( w, h, this.img.offsetWidth );
+  // size properties
   this.diagonal = Math.sqrt( w*w + h*h );
   this.imgScale = this.width / this.imgWidth;
   this.gridSize = this.options.gridSize / 100 * this.diagonal;
 
-  // console.log( this.imgData.length );
   // set proxy canvases size
   for ( var prop in this.proxyCanvases ) {
     var proxy = this.proxyCanvases[ prop ];
