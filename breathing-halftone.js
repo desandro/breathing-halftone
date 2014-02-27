@@ -104,7 +104,7 @@ function Halftone( img, options ) {
 }
 
 Halftone.defaults = {
-  gridSize: 20,
+  gridSize: 2.5,
   isAdditive: true,
   channels: [
     'red',
@@ -206,6 +206,7 @@ Halftone.prototype.onImgLoad = function() {
   // console.log( w, h, this.img.offsetWidth );
   this.diagonal = Math.sqrt( w*w + h*h );
   this.imgScale = this.width / this.imgWidth;
+  this.gridSize = this.options.gridSize / 100 * this.diagonal;
 
   // console.log( this.imgData.length );
   // set proxy canvases size
@@ -333,7 +334,7 @@ Halftone.prototype.getCartesianGridParticles = function( channel, angle ) {
 
   var diag = Math.max( w, h ) * ROOT_2;
 
-  var gridSize = this.options.gridSize;
+  var gridSize = this.gridSize;
   var cols = Math.ceil( diag / gridSize );
   var rows = Math.ceil( diag / gridSize );
 
@@ -371,7 +372,7 @@ Halftone.prototype.getRadialGridParticles = function( channel, angle ) {
   var h = this.height;
   var diag = Math.max( w, h ) * ROOT_2;
 
-  var gridSize = this.options.gridSize;
+  var gridSize = this.gridSize;
 
   var halfW = w / 2;
   var halfH = h / 2;
@@ -410,7 +411,7 @@ Halftone.prototype.initParticle = function( channel, x2, y2 ) {
     channel: channel,
     parent: this,
     origin: new Vector( x2, y2 ),
-    naturalSize: this.options.gridSize * ROOT_2 / 2,
+    naturalSize: this.gridSize * ROOT_2 / 2,
     friction: this.options.friction
   });
 
