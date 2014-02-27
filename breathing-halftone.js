@@ -191,6 +191,14 @@ Halftone.prototype.loadImage = function() {
 };
 
 Halftone.prototype.onImgLoad = function() {
+  this.getImgData();
+  this.resizeCanvas();
+  this.getCanvasPosition();
+  this.initParticles();
+  this.animate();
+};
+
+Halftone.prototype.getImgData = function() {
   // get imgData
   var canvasAndCtx = makeCanvasAndCtx();
   var imgCanvas = canvasAndCtx.canvas;
@@ -199,7 +207,9 @@ Halftone.prototype.onImgLoad = function() {
   this.imgHeight = imgCanvas.height = this.img.naturalHeight;
   ctx.drawImage( this.img, 0, 0 );
   this.imgData = ctx.getImageData( 0, 0, this.imgWidth, this.imgHeight ).data;
+};
 
+Halftone.prototype.resizeCanvas = function() {
   var w = this.width = this.img.offsetWidth;
   var h = this.height = this.img.offsetHeight;
 
@@ -217,10 +227,6 @@ Halftone.prototype.onImgLoad = function() {
   }
   this.canvas.width = w;
   this.canvas.height = h;
-
-  this.getCanvasPosition();
-  this.initParticles();
-  this.animate();
 };
 
 Halftone.prototype.initParticles = function() {
