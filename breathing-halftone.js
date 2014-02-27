@@ -254,9 +254,6 @@ Halftone.prototype.animate = function() {
 Halftone.prototype.update = function() {
   // displace particles with cursors (mouse, touches)
   var displaceOpts = this.options.displacement;
-  radius *= this.diagonal;
-
-  // console.log( this.cursors.mouse.position.y );
 
   for ( var i=0, len = this.particles.length; i < len; i++ ) {
     var particle = this.particles[i];
@@ -265,6 +262,7 @@ Halftone.prototype.update = function() {
       var cursor = this.cursors[ identifier ];
       var forceScale = cursor.isDown ? displaceOpts.activeForce : displaceOpts.hoverForce;
       var radius = cursor.isDown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
+      radius *= this.diagonal;
       var force = Vector.subtract( particle.position, cursor.position );
       var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
       scale = Math.cos( (1 - scale) * Math.PI ) * 0.5 + 0.5;
