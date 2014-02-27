@@ -38,47 +38,30 @@ function insertAfter( elem, afterElem ) {
   }
 }
 
-var isCanvasSupported = ( function() {
-  var isSupported;
+// -------------------------- supports -------------------------- //
 
-  function checkCanvasSupport() {
-    if ( isFinite( isSupported ) ) {
-      return isSupported;
-    }
+var supports = {};
 
-    var canvas = document.createElement('canvas');
-    isSupported = !!( canvas.getContext && canvas.getContext('2d') );
-    return isSupported;
+( function() {
+  // check canvas support
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext && canvas.getContext('2d');
+  supports.canvas = !!ctx;
+  if ( !supports.canvas ) {
+    return;
   }
 
-  return checkCanvasSupport;
+  // check darker composite support
+  canvas.width = 1;
+  canvas.height = 1;
+  ctx.globalCompositeOperation = 'darker';
+  ctx.fillStyle = '#F00';
+  ctx.fillRect( 0, 0, 1, 1 );
+  ctx.fillStyle = '#999';
+  ctx.fillRect( 0, 0, 1, 1 );
+  var imgData = ctx.getImageData( 0, 0, 1, 1 ).data;
+  supports.darker = imgData[0] === 153 && imgData[1] === 0;
 })();
-
-// check that darker composite is supported
-var isDarkerSupported = ( function() {
-  var isSupported;
-
-  function checkDarkerSupport() {
-    if ( isFinite( isSupported ) ) {
-      return isSupported;
-    }
-
-    var canvas = document.createElement('canvas');
-    canvas.width = 1;
-    canvas.height = 1;
-    var ctx = canvas.getContext('2d');
-    ctx.globalCompositeOperation = 'darker';
-    ctx.fillStyle = '#F00';
-    ctx.fillRect( 0, 0, 1, 1 );
-    ctx.fillStyle = '#999';
-    ctx.fillRect( 0, 0, 1, 1 );
-    var imgData = ctx.getImageData( 0, 0, 1, 1 ).data;
-    return imgData[0] === 153 && imgData[1] === 0;
-  }
-
-  return checkDarkerSupport;
-})();
-
 
 // --------------------------  -------------------------- //
 
@@ -95,7 +78,7 @@ function Halftone( img, options ) {
 
   this.img = img;
   // bail if canvas is not supported
-  if ( !isCanvasSupported() ) {
+  if ( !supports.canvas ) {
     return;
   }
 
@@ -147,9 +130,8 @@ Halftone.prototype.create = function() {
   // hide img visually
   this.img.style.visibility = 'hidden';
 
-  this.isDarkerSupported = isDarkerSupported();
   // fall back to lum channel if subtractive and darker isn't supported
-  this.channels = !this.options.isAdditive && !this.isDarkerSupported ?
+  this.channels = !this.options.isAdditive && !supports.darker ?
     [ 'lum' ] : this.options.channels;
 
   // create separate canvases for each color
