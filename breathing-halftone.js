@@ -175,6 +175,7 @@ Halftone.prototype.getCanvasPosition = function() {
   var x = rect.left + window.scrollX;
   var y = rect.top + window.scrollY;
   this.canvasPosition.set( x, y );
+  this.canvasScale = this.width / this.canvas.offsetWidth;
 };
 
 // -------------------------- img -------------------------- //
@@ -204,7 +205,7 @@ Halftone.prototype.onImgLoad = function() {
 
   // console.log( w, h, this.img.offsetWidth );
   this.diagonal = Math.sqrt( w*w + h*h );
-  this.zoom = this.width / this.imgWidth;
+  this.imgScale = this.width / this.imgWidth;
 
   // console.log( this.imgData.length );
   // set proxy canvases size
@@ -215,9 +216,10 @@ Halftone.prototype.onImgLoad = function() {
   }
   this.canvas.width = w;
   this.canvas.height = h;
+
+  this.getCanvasPosition();
   this.initParticles();
   this.animate();
-
 };
 
 Halftone.prototype.initParticles = function() {
@@ -421,8 +423,8 @@ var channelOffset = {
 };
 
 Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
-  x = Math.round( x / this.zoom );
-  y = Math.round( y / this.zoom );
+  x = Math.round( x / this.imgScale );
+  y = Math.round( y / this.imgScale );
   var w = this.imgWidth;
   var h = this.imgHeight;
 
@@ -491,6 +493,7 @@ Halftone.prototype.onmousemove = function( event ) {
   // set cursorPositon
   this.cursorPosition.set( event.pageX, event.pageY );
   this.cursorPosition.subtract( this.canvasPosition );
+  this.cursorPosition.scale( this.canvasScale );
 };
 
 function debounceProto( _class, methodName, threshold ) {
