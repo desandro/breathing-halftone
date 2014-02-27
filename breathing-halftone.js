@@ -105,7 +105,6 @@ function Halftone( img, options ) {
 
 Halftone.defaults = {
   gridSize: 20,
-  zoom: 1,
   isAdditive: true,
   channels: [
     'red',
@@ -183,29 +182,29 @@ Halftone.prototype.getCanvasPosition = function() {
 Halftone.prototype.loadImage = function() {
   // hack img load
   var src = this.img.src;
-  this.img = new Image();
-  this.img.onload = function() {
+  var loadingImg = new Image();
+  loadingImg.onload = function() {
     this.onImgLoad();
   }.bind( this );
-  this.img.src = src;
+  loadingImg.src = src;
 };
 
-Halftone.prototype.onImgLoad = function( callback ) {
-  var imgCanvas = document.createElement('canvas');
-  var ctx = imgCanvas.getContext('2d');
-  var w = imgCanvas.width = this.img.width;
-  var h = imgCanvas.height = this.img.height;
-  this.imgWidth = w;
-  this.imgHeight = h;
+Halftone.prototype.onImgLoad = function() {
+  // get imgData
+  var canvasAndCtx = makeCanvasAndCtx();
+  var imgCanvas = canvasAndCtx.canvas;
+  var ctx = canvasAndCtx.ctx;
+  this.imgWidth = imgCanvas.width = this.img.naturalWidth;
+  this.imgHeight = imgCanvas.height = this.img.naturalHeight;
   ctx.drawImage( this.img, 0, 0 );
-  this.imgData = ctx.getImageData( 0, 0, w, h ).data;
+  this.imgData = ctx.getImageData( 0, 0, this.imgWidth, this.imgHeight ).data;
 
-  w *= this.options.zoom;
-  h *= this.options.zoom;
+  var w = this.width = this.img.offsetWidth;
+  var h = this.height = this.img.offsetHeight;
 
-  this.width = w;
-  this.height = h;
+  // console.log( w, h, this.img.offsetWidth );
   this.diagonal = Math.sqrt( w*w + h*h );
+  this.zoom = this.width / this.imgWidth;
 
   // console.log( this.imgData.length );
   // set proxy canvases size
@@ -219,10 +218,6 @@ Halftone.prototype.onImgLoad = function( callback ) {
   this.initParticles();
   this.animate();
 
-
-  if ( callback ) {
-    callback.call( this );
-  }
 };
 
 Halftone.prototype.initParticles = function() {
@@ -401,10 +396,6 @@ Halftone.prototype.getRadialGridParticles = function( channel, angle ) {
 
 };
 
-function isOutside( x, y, w, h ) {
-  return x < 0 || x > w || y < 0 || y > h;
-}
-
 Halftone.prototype.initParticle = function( channel, x2, y2 ) {
   // don't render if coords are outside image
   // don't display if under threshold
@@ -430,8 +421,8 @@ var channelOffset = {
 };
 
 Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
-  x = Math.round( x / this.options.zoom );
-  y = Math.round( y / this.options.zoom );
+  x = Math.round( x / this.zoom );
+  y = Math.round( y / this.zoom );
   var w = this.imgWidth;
   var h = this.imgHeight;
 
