@@ -472,6 +472,7 @@ Halftone.prototype.bindEvents = function() {
   this.canvas.addEventListener( 'touchstart', this, false );
   window.addEventListener( 'mousemove', this, false );
   window.addEventListener( 'touchmove', this, false );
+  window.addEventListener( 'touchend', this, false );
   window.addEventListener( 'resize', this, false );
 };
 
@@ -489,9 +490,11 @@ Halftone.prototype.onmousedown = function( event ) {
 };
 
 Halftone.prototype.ontouchstart = function( event ) {
+  event.preventDefault();
   for ( var i=0, len = event.changedTouches.length; i < len; i++ ) {
     var touch = event.changedTouches[i];
-    this.addCursor( touch.identifier, touch );
+    var cursor = this.addCursor( touch.identifier, touch );
+    cursor.isDown = true;
   }
 };
 
@@ -499,12 +502,12 @@ Halftone.prototype.ontouchstart = function( event ) {
  * @param {MouseEvent or Touch} cursorEvent - with pageX and pageY
  */
 Halftone.prototype.addCursor = function( identifier, cursorEvent ) {
-  console.log( identifier, cursorEvent );
   var position = this.setCursorPosition( cursorEvent );
-  this.cursors[ identifier ] = {
+  var cursor = this.cursors[ identifier ] = {
     position: position,
     isDown: false
   };
+  return cursor;
 };
 
 /**
@@ -512,7 +515,6 @@ Halftone.prototype.addCursor = function( identifier, cursorEvent ) {
  * @param {Vector} position - optional
  */
 Halftone.prototype.setCursorPosition = function( cursorEvent, position ) {
-  // console.log( cursorEvent.pageX, cursorEvent.pageY );
   position = position || new Vector();
   position.set( cursorEvent.pageX, cursorEvent.pageY );
   position.subtract( this.canvasPosition );
@@ -525,9 +527,31 @@ Halftone.prototype.onmousemove = function( event ) {
   this.setCursorPosition( event, this.cursors.mouse.position );
 };
 
+Halftone.prototype.ontouchmove = function( event ) {
+  // move matching cursors
+  for ( var i=0, len = event.changedTouches.length; i < len; i++ ) {
+    var touch = event.changedTouches[i];
+    var cursor = this.cursors[ touch.identifier ];
+    if ( cursor ) {
+      this.setCursorPosition( touch, cursor.position );
+    }
+  }
+};
+
 Halftone.prototype.onmouseup = function() {
   this.cursors.mouse.isDown = false;
   window.removeEventListener( 'mouseup', this, false );
+};
+
+Halftone.prototype.ontouchend = function( event ) {
+  // remove matching cursors
+  for ( var i=0, len = event.changedTouches.length; i < len; i++ ) {
+    var touch = event.changedTouches[i];
+    var cursor = this.cursors[ touch.identifier ];
+    if ( cursor ) {
+      delete this.cursors[ touch.identifier ];
+    }
+  }
 };
 
 
