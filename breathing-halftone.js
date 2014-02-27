@@ -143,10 +143,10 @@ Halftone.prototype.create = function() {
   var canvasAndCtx = makeCanvasAndCtx();
   this.canvas = canvasAndCtx.canvas;
   this.ctx = canvasAndCtx.ctx;
+  // copy over class
+  this.canvas.className = this.img.className;
   insertAfter( this.canvas, this.img );
-  this.img.style.display = 'none';
-
-  // this.img.parentNode.insertBefore();
+  // this.img.style.display = 'none';
 
   this.isDarkerSupported = isDarkerSupported();
   // fall back to lum channel if subtractive and darker isn't supported
@@ -160,7 +160,7 @@ Halftone.prototype.create = function() {
     this.proxyCanvases[ channel ] = makeCanvasAndCtx();
   }
 
-  this.getImageData();
+  this.loadImage();
 
   // properties
   this.canvasPosition = new Vector();
@@ -180,12 +180,12 @@ Halftone.prototype.getCanvasPosition = function() {
 
 // -------------------------- img -------------------------- //
 
-Halftone.prototype.getImageData = function( callback ) {
+Halftone.prototype.loadImage = function() {
   // hack img load
   var src = this.img.src;
   this.img = new Image();
   this.img.onload = function() {
-    this.onImgLoad( callback );
+    this.onImgLoad();
   }.bind( this );
   this.img.src = src;
 };
@@ -432,12 +432,15 @@ var channelOffset = {
 Halftone.prototype.getPixelChannelValue = function( x, y, channel ) {
   x = Math.round( x / this.options.zoom );
   y = Math.round( y / this.options.zoom );
+  var w = this.imgWidth;
+  var h = this.imgHeight;
 
-  if ( isOutside( x, y, this.imgWidth, this.imgHeight ) ) {
+  // return 0 if position is outside of image
+  if ( x < 0 || x > w || y < 0 || y > h ) {
     return 0;
   }
 
-  var pixelIndex = ( x + y * this.imgWidth ) * 4;
+  var pixelIndex = ( x + y * w ) * 4;
   var value;
   // return 1;
   if ( channel === 'lum' ) {

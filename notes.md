@@ -4,3 +4,5 @@ img fallback
 <!-- only generate particles for channels being shown -->
 
 multitouch
+
+responsive sizing

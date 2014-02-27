@@ -5,13 +5,20 @@
 
   <title>breathing halftone</title>
 
+  <style>
+  .halftone {
+    width: 40%;
+/*    display: block;*/
+  }
+  </style>
+
 </head>
 <body>
 
   <!-- <h1>breathing halftone</h1> -->
 
   <!-- <img id="breathing-halftone" src="img/korodark2.jpg" /> -->
-  <img id="breathing-halftone" src="img/sarah2.jpg" />
+  <img id="breathing-halftone" class="halftone" src="img/sarah2.jpg" />
 
 <script src="vector.js"></script>
 <script src="particle.js"></script>
@@ -20,8 +27,8 @@
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   var halftone = window.halftone = new BreathingHalftone( img, {
-    zoom: 1.2,
-    gridSize: 30,
+    zoom: 1.0,
+    gridSize: 20,
     isAdditive: false,
     // isRadial: true,
     // friction: 0.1,
@@ -29,7 +36,7 @@ window.onload = function() {
     // channels: [ 'green', 'blue' ],
     // channels: [ 'lum' ],
     dotSizeOsc: {
-      delta: 0.2
+      // delta: 0.2
     },
     displacement: {
       // hoverForce: 0,
