@@ -145,9 +145,12 @@ Halftone.prototype.create = function() {
 
   // properties
   this.canvasPosition = new Vector();
-  // position -100,000, -100,000 so its not on screen
-  this.cursorPosition = new Vector( -1e5, -1e5 );
   this.getCanvasPosition();
+  // hash of mouse / touch events
+  this.cursors = {};
+  // position -100,000, -100,000 so its not on screen
+  this.addCursor( 'mouse', { pageX: -1e5, pageY: -1e5 });
+  // this.cursorPosition = new Vector( -1e5, -1e5 );
 
   this.bindEvents();
 
@@ -158,7 +161,7 @@ Halftone.prototype.getCanvasPosition = function() {
   var x = rect.left + window.scrollX;
   var y = rect.top + window.scrollY;
   this.canvasPosition.set( x, y );
-  this.canvasScale = this.width / this.canvas.offsetWidth;
+  this.canvasScale = this.width ? this.width / this.canvas.offsetWidth  : 1;
 };
 
 // -------------------------- img -------------------------- //
@@ -180,6 +183,7 @@ Halftone.prototype.loadImage = function() {
 Halftone.prototype.onImgLoad = function() {
   this.getImgData();
   this.resizeCanvas();
+  this.getCanvasPosition();
   // hide image completely
   this.img.style.display = 'none';
   this.getCanvasPosition();
@@ -250,19 +254,24 @@ Halftone.prototype.animate = function() {
 Halftone.prototype.update = function() {
   // displace particles with cursors (mouse, touches)
   var displaceOpts = this.options.displacement;
-  var forceScale = this.isMousedown ? displaceOpts.activeForce : displaceOpts.hoverForce;
-  var radius = this.isMousedown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
   radius *= this.diagonal;
+
+  // console.log( this.cursors.mouse.position.y );
 
   for ( var i=0, len = this.particles.length; i < len; i++ ) {
     var particle = this.particles[i];
-    // cursor interaction
-    var force = Vector.subtract( particle.position, this.cursorPosition );
-    var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
-    // scale = Math.cos( scale );
-    scale = Math.cos( (1 - scale) * Math.PI ) * 0.5 + 0.5;
-    force.scale( scale * forceScale );
-    particle.applyForce( force );
+    // apply forces for each cursor
+    for ( var identifier in this.cursors ) {
+      var cursor = this.cursors[ identifier ];
+      var forceScale = cursor.isDown ? displaceOpts.activeForce : displaceOpts.hoverForce;
+      var radius = cursor.isDown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
+      var force = Vector.subtract( particle.position, cursor.position );
+      var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
+      scale = Math.cos( (1 - scale) * Math.PI ) * 0.5 + 0.5;
+      force.scale( scale * forceScale );
+      particle.applyForce( force );
+    }
+
     particle.update();
   }
 };
@@ -462,7 +471,9 @@ Halftone.prototype.getPixelLum = function( pixelIndex ) {
 
 Halftone.prototype.bindEvents = function() {
   this.canvas.addEventListener( 'mousedown', this, false );
+  this.canvas.addEventListener( 'touchstart', this, false );
   window.addEventListener( 'mousemove', this, false );
+  window.addEventListener( 'touchmove', this, false );
   window.addEventListener( 'resize', this, false );
 };
 
@@ -475,21 +486,52 @@ Halftone.prototype.handleEvent = function( event ) {
 
 Halftone.prototype.onmousedown = function( event ) {
   event.preventDefault();
-  this.isMousedown = true;
+  this.cursors.mouse.isDown = true;
   window.addEventListener( 'mouseup', this, false );
 };
 
+Halftone.prototype.ontouchstart = function( event ) {
+  for ( var i=0, len = event.changedTouches.length; i < len; i++ ) {
+    var touch = event.changedTouches[i];
+    this.addCursor( touch.identifier, touch );
+  }
+};
+
+/**
+ * @param {MouseEvent or Touch} cursorEvent - with pageX and pageY
+ */
+Halftone.prototype.addCursor = function( identifier, cursorEvent ) {
+  console.log( identifier, cursorEvent );
+  var position = this.setCursorPosition( cursorEvent );
+  this.cursors[ identifier ] = {
+    position: position,
+    isDown: false
+  };
+};
+
+/**
+ * @param {MouseEvent or Touch} cursorEvent - with pageX and pageY
+ * @param {Vector} position - optional
+ */
+Halftone.prototype.setCursorPosition = function( cursorEvent, position ) {
+  // console.log( cursorEvent.pageX, cursorEvent.pageY );
+  position = position || new Vector();
+  position.set( cursorEvent.pageX, cursorEvent.pageY );
+  position.subtract( this.canvasPosition );
+  position.scale( this.canvasScale );
+  return position;
+};
+
+
+Halftone.prototype.onmousemove = function( event ) {
+  this.setCursorPosition( event, this.cursors.mouse.position );
+};
+
 Halftone.prototype.onmouseup = function() {
-  this.isMousedown = false;
+  this.cursors.mouse.isDown = false;
   window.removeEventListener( 'mouseup', this, false );
 };
 
-Halftone.prototype.onmousemove = function( event ) {
-  // set cursorPositon
-  this.cursorPosition.set( event.pageX, event.pageY );
-  this.cursorPosition.subtract( this.canvasPosition );
-  this.cursorPosition.scale( this.canvasScale );
-};
 
 function debounceProto( _class, methodName, threshold ) {
   // original method
