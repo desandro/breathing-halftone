@@ -5,10 +5,12 @@
 
   <title>breathing halftone</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
   .halftone {
-    width: 60%;
-/*    display: block;*/
+    width: 50%;
+    display: block;
   }
   </style>
 
@@ -28,7 +30,7 @@ window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   var halftone = window.halftone = new BreathingHalftone( img, {
     gridSize: 3,
-    isAdditive: false,
+    isAdditive: true,
     // isRadial: true,
     // friction: 0.2,
     // isChannelLens: false,

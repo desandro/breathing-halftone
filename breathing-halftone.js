@@ -196,8 +196,8 @@ Halftone.prototype.create = function() {
 
 Halftone.prototype.getCanvasPosition = function() {
   var rect = this.canvas.getBoundingClientRect();
-  var x = rect.left + window.scrollX;
-  var y = rect.top + window.scrollY;
+  var x = rect.left + window.pageXOffset;
+  var y = rect.top + window.pageYOffset;
   this.canvasPosition.set( x, y );
   this.canvasScale = this.width ? this.width / this.canvas.offsetWidth  : 1;
 };
