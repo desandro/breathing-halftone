@@ -10,9 +10,9 @@ var ROOT_2 = Math.sqrt( 2 );
 // ----- helpers ----- //
 
 var objToString = Object.prototype.toString;
-function isArray( obj ) {
+var isArray = Array.isArray || function( obj ) {
   return objToString.call( obj ) === '[object Array]';
-}
+};
 
 // extend objects
 function extend( a, b, isDeep ) {
@@ -188,10 +188,8 @@ Halftone.prototype.create = function() {
   this.cursors = {};
   // position -100,000, -100,000 so its not on screen
   this.addCursor( 'mouse', { pageX: -1e5, pageY: -1e5 });
-  // this.cursorPosition = new Vector( -1e5, -1e5 );
 
   this.bindEvents();
-
 };
 
 Halftone.prototype.getCanvasPosition = function() {

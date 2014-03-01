@@ -3,6 +3,6 @@
 
 <!-- only generate particles for channels being shown -->
 
-multitouch
+<!-- multitouch -->
 
 <!-- responsive sizing -->
