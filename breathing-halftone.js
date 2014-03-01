@@ -140,6 +140,7 @@ Halftone.defaults = {
     activeForce: 0.01
   },
   dotThreshold: 0.05,
+  initSizeVelocity: 0.02,
   dotSizeOsc: {
     period: 3,
     delta: 0.2
@@ -447,7 +448,7 @@ Halftone.prototype.initParticle = function( channel, x, y ) {
   return new Particle({
     channel: channel,
     parent: this,
-    origin: new Vector( x2, y2 ),
+    origin: new Vector( x, y ),
     naturalSize: this.gridSize * ROOT_2 / 2,
     friction: this.options.friction
   });

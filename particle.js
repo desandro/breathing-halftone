@@ -22,20 +22,18 @@ function Particle( properties ) {
   this.origin = properties.origin;
   this.parent = properties.parent;
   this.friction = properties.friction;
+
   this.position = Vector.copy( this.origin );
-  // this.position.y += this.parent.diagonal * 0.01;
-  this.naturalSize = properties.naturalSize;
-  this.size = 0;
-  this.oscSize = 0;
-  this.initSize = 0;
-  this.initSizeVelocity = ( Math.random() * 0.5 + 0.5 ) * 0.02;
   this.velocity = new Vector();
   this.acceleration = new Vector();
-  this.sizeVelocity = 0;
 
-  // var center = new Vector( this.parent.width / 2, this.parent.height / 2 );
-  // center.subtract( this.origin )
-  // this.oscillationOffset = center.getMagnitude() / 50;
+  this.naturalSize = properties.naturalSize;
+  this.size = 0;
+  this.sizeVelocity = 0;
+  this.oscSize = 0;
+  this.initSize = 0;
+  this.initSizeVelocity = ( Math.random() * 0.5 + 0.5 ) * this.parent.options.initSizeVelocity;
+
   this.oscillationOffset = Math.random() * TAU;
   this.oscillationMagnitude = Math.random();
   this.isVisible = false;
@@ -46,7 +44,7 @@ Particle.prototype.applyForce = function( force ) {
 };
 
 Particle.prototype.update = function() {
-
+  // stagger starting
   if ( !this.isVisible && Math.random() > 0.03 ) {
     return;
   }
@@ -68,7 +66,9 @@ Particle.prototype.update = function() {
 Particle.prototype.render = function( ctx ) {
 
   var size = this.size * this.oscSize;
-  size *= this.initSize;
+  // apply initSize with easing
+  var initSize = Math.cos( this.initSize * TAU / 2 ) * -0.5 + 0.5;
+  size *= initSize;
   size = Math.max( 0, size );
   ctx.beginPath();
   ctx.arc( this.position.x, this.position.y, size, 0, TAU );
