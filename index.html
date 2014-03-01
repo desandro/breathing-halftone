@@ -29,22 +29,24 @@
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   var halftone = window.halftone = new BreathingHalftone( img, {
-    gridSize: 3,
+    dotSize: {
+      // diameter: 1/30
+      // threshold: 0.4
+      // oscAmplitude: 0.3
+      // oscPeriod: 2
+      // initVelocity: 0.01
+    },
     isAdditive: false,
     // isRadial: true,
     // friction: 0.2,
     // isChannelLens: false,
-    initSizeVelocity: 0.01,
     // channels: [ 'green', 'blue' ],
     // channels: [ 'lum' ],
-    dotSizeOsc: {
-      // delta: 0.2
-    },
     displacement: {
-      // hoverForce: 0,
-      // hoverRadius: 0.3,
-      // activeRadius: 0.1,
-      // activeForce: 0.2
+      // hoverDiameter: 0.3,
+      // hoverForce: -0.02,
+      // activeDiameter: 0.6,
+      // activeForce: 0.01
     }
   });
 };

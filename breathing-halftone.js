@@ -132,13 +132,14 @@ Halftone.defaults = {
     oscAmplitude: 0.2
   },
   isAdditive: false,
+  isRadial: false,
   channels: [ 'red', 'green', 'blue' ],
   isChannelLens: true,
   friction: 0.06,
   displacement: {
-    hoverRadius: 0.15,
+    hoverDiameter: 0.3,
     hoverForce: -0.02,
-    activeRadius: 0.3,
+    activeDiameter: 0.6,
     activeForce: 0.01
   }
 };
@@ -293,13 +294,15 @@ Halftone.prototype.update = function() {
     // apply forces for each cursor
     for ( var identifier in this.cursors ) {
       var cursor = this.cursors[ identifier ];
-      var forceScale = cursor.isDown ? displaceOpts.activeForce : displaceOpts.hoverForce;
-      var radius = cursor.isDown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
-      radius *= this.diagonal;
+      var cursorState = cursor.isDown ? 'active' : 'hover';
+      var forceScale = displaceOpts[ cursorState + 'Force' ];
+      var diameter = displaceOpts[ cursorState + 'Diameter' ];
+      var radius = diameter / 2 * this.diagonal;
       var force = Vector.subtract( particle.position, cursor.position );
-      var scale = Math.max( 0, radius - force.magnitude ) / radius;
-      scale = Math.cos( (1 - scale) * Math.PI ) * 0.5 + 0.5;
-      force.scale( scale * forceScale );
+      var distanceScale = Math.max( 0, radius - force.magnitude ) / radius;
+      // easeInOutSine
+      distanceScale = Math.cos( distanceScale * Math.PI ) * -0.5 + 0.5;
+      force.scale( distanceScale * forceScale );
       particle.applyForce( force );
     }
 
