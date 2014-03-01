@@ -436,10 +436,10 @@ Halftone.prototype.getRadialGridParticles = function( channel, angle ) {
 
 };
 
-Halftone.prototype.initParticle = function( channel, x2, y2 ) {
+Halftone.prototype.initParticle = function( channel, x, y ) {
   // don't render if coords are outside image
   // don't display if under threshold
-  var pixelChannelValue = this.getPixelChannelValue( x2, y2, channel );
+  var pixelChannelValue = this.getPixelChannelValue( x, y, channel );
   if ( pixelChannelValue < this.options.dotThreshold ) {
     return;
   }
