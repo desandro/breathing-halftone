@@ -37,9 +37,12 @@ Vector.prototype.multiply = function( v ) {
   this.y *= v.y;
 };
 
-Vector.prototype.getMagnitude = function() {
-  return Math.sqrt( this.x * this.x  + this.y * this.y );
-};
+// custom getter whaaaaaaat
+Object.defineProperty( Vector.prototype, 'magnitude', {
+  get: function() {
+    return Math.sqrt( this.x * this.x  + this.y * this.y );
+  }
+});
 
 // ----- class functions ----- //
 

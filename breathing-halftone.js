@@ -302,7 +302,7 @@ Halftone.prototype.update = function() {
       var radius = cursor.isDown ? displaceOpts.activeRadius : displaceOpts.hoverRadius;
       radius *= this.diagonal;
       var force = Vector.subtract( particle.position, cursor.position );
-      var scale = Math.max( 0, radius - force.getMagnitude() ) / radius;
+      var scale = Math.max( 0, radius - force.magnitude ) / radius;
       scale = Math.cos( (1 - scale) * Math.PI ) * 0.5 + 0.5;
       force.scale( scale * forceScale );
       particle.applyForce( force );
