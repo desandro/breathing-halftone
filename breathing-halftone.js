@@ -124,13 +124,15 @@ function Halftone( img, options ) {
 }
 
 Halftone.defaults = {
-  gridSize: 2.5,
-  isAdditive: true,
-  channels: [
-    'red',
-    'green',
-    'blue'
-  ],
+  dotSize: {
+    diameter: 1/40,
+    threshold: 0.05,
+    initVelocity: 0.02,
+    oscPeriod: 3,
+    oscAmplitude: 0.2
+  },
+  isAdditive: false,
+  channels: [ 'red', 'green', 'blue' ],
   isChannelLens: true,
   friction: 0.06,
   displacement: {
@@ -138,12 +140,6 @@ Halftone.defaults = {
     hoverForce: -0.02,
     activeRadius: 0.3,
     activeForce: 0.01
-  },
-  dotThreshold: 0.05,
-  initSizeVelocity: 0.02,
-  dotSizeOsc: {
-    period: 3,
-    delta: 0.2
   }
 };
 
@@ -246,7 +242,7 @@ Halftone.prototype.resizeCanvas = function() {
   // size properties
   this.diagonal = Math.sqrt( w*w + h*h );
   this.imgScale = this.width / this.imgWidth;
-  this.gridSize = this.options.gridSize / 100 * this.diagonal;
+  this.gridSize = this.options.dotSize.diameter * this.diagonal;
 
   // set proxy canvases size
   for ( var prop in this.proxyCanvases ) {
@@ -441,7 +437,7 @@ Halftone.prototype.initParticle = function( channel, x, y ) {
   // don't render if coords are outside image
   // don't display if under threshold
   var pixelChannelValue = this.getPixelChannelValue( x, y, channel );
-  if ( pixelChannelValue < this.options.dotThreshold ) {
+  if ( pixelChannelValue < this.options.dotSize.threshold ) {
     return;
   }
 
