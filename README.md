@@ -1,10 +1,12 @@
 # Breathing Halftone
 
-_Images go whoa with Lots of floaty dots_
+_Images go whoa with lots of floaty dots_
 
 Made for [Yaron](http://yaronschoen.com/)
 
 ## Install
+
+[breathing-halftone.pkgd.js](http://breathing-halftone.desandro.com/breathing-halfton.pkgd.js)
 
 ## Usage
 
