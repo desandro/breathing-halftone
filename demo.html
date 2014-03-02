@@ -9,7 +9,7 @@
 
   <style>
   .halftone {
-    width: 50%;
+    width: 80%;
     display: block;
   }
   </style>
@@ -19,18 +19,17 @@
 
   <!-- <h1>breathing halftone</h1> -->
 
-  <!-- <img id="breathing-halftone" src="img/korodark2.jpg" /> -->
-  <img id="breathing-halftone" class="halftone" src="img/sarah2-dots.png" data-src="img/sarah2.jpg" />
+  <img id="breathing-halftone" class="halftone" src="img/sarah2-dots.png" data-src="img/sarah3.jpg" />
 
-<script src="vector.js"></script>
-<script src="particle.js"></script>
-<script src="breathing-halftone.js"></script>
+<script src="js/vector.js"></script>
+<script src="js/particle.js"></script>
+<script src="js/breathing-halftone.js"></script>
 <script>
 window.onload = function() {
   var img = document.querySelector('#breathing-halftone');
   var halftone = window.halftone = new BreathingHalftone( img, {
     dotSize: {
-      // diameter: 1/30
+      diameter: 1/55
       // threshold: 0.4
       // oscAmplitude: 0.3
       // oscPeriod: 2
