@@ -6,7 +6,10 @@
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.5.5",
-    "gulp-concat": "^2.1.7"
+    "gulp-concat": "^2.1.7",
+    "gulp-markdown": "^0.1.2",
+    "gulp-rename": "^1.1.0",
+    "highlight.js": "^8.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
