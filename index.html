@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>Breathing Halftone</title>
+
+</head>
+<body>
+
+  <h1 id="breathing-halftone">Breathing Halftone</h1>
+<p><em>Images go whoa with Lots of floaty dots</em></p>
+<p>Made for <a href="http://yaronschoen.com/">Yaron</a></p>
+<h2 id="install">Install</h2>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-js"><span class="hljs-comment">// get the image</span>
+<span class="hljs-comment">// jquery</span>
+<span class="hljs-keyword">var</span> img = $(<span class="hljs-string">'#hero img'</span>)[<span class="hljs-number">0</span>];
+<span class="hljs-comment">// or vanilla JS</span>
+<span class="hljs-keyword">var</span> img = document.querySelector(<span class="hljs-string">'#hero img'</span>);
+
+<span class="hljs-comment">// init halftone</span>
+<span class="hljs-keyword">new</span> BreathingHalftone( img, {
+  <span class="hljs-comment">// options...</span>
+});
+</code></pre>
+<p>Browsers that do not support <code>&lt;canvas&gt;</code> will fall back to the original image.</p>
+<p>Set <code>data-src</code> to use a different source image, so you can display stylized halftone-y image as a fallback.</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">img</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"portrait-dots.png"</span> <span class="hljs-attribute">data-src</span>=<span class="hljs-value">"portrait.jpg"</span> /&gt;</span>
+</code></pre>
+<h2 id="options">Options</h2>
+<p>There are a bunch of options so you can fine-tune to your heart&#39;s content.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// default options</span>
+{
+  dotSize: {
+    diameter: <span class="hljs-number">1</span>/<span class="hljs-number">40</span>,
+    <span class="hljs-comment">// size of dots</span>
+    <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
+    <span class="hljs-comment">// smaller dots = more dots = </span>
+
+    threshold: <span class="hljs-number">0.05</span>,
+    <span class="hljs-comment">// hides dots that are smaller than a percentage</span>
+
+    initVelocity: <span class="hljs-number">0.02</span>,
+    <span class="hljs-comment">// speed at which dots initially grow</span>
+
+    oscPeriod: <span class="hljs-number">3</span>,
+    <span class="hljs-comment">// duration in seconds of a cycle of dot size oscilliation or 'breathing'</span>
+
+    oscAmplitude: <span class="hljs-number">0.2</span>
+    <span class="hljs-comment">// percentage of change of oscillation</span>
+  },
+
+  isAdditive: <span class="hljs-literal">false</span>,
+  <span class="hljs-comment">// additive is black with RGB dots,</span>
+  <span class="hljs-comment">// subtractive is white with CMK dots</span>
+
+  isRadial: <span class="hljs-literal">false</span>,
+  <span class="hljs-comment">// enables radial grid layout</span>
+
+  channels: [ <span class="hljs-string">'red'</span>, <span class="hljs-string">'green'</span>, <span class="hljs-string">'blue'</span> ],
+  <span class="hljs-comment">// layers of dots</span>
+  <span class="hljs-comment">// 'lum' is another supported channel, for luminosity</span>
+
+  isChannelLens: <span class="hljs-literal">true</span>,
+  <span class="hljs-comment">// disables changing size of dots when displaced</span>
+
+  friction: <span class="hljs-number">0.06</span>,
+  <span class="hljs-comment">// lower makes dots easier to move, higher makes it harder</span>
+
+  displacement: {
+    hoverDiameter: <span class="hljs-number">0.3</span>,
+    <span class="hljs-comment">// size of hover effect</span>
+    <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
+
+    hoverForce: -<span class="hljs-number">0.02</span>,
+    <span class="hljs-comment">// amount of force of hover effect</span>
+    <span class="hljs-comment">// negative values pull dots in, positive push out</span>
+
+    activeDiameter: <span class="hljs-number">0.6</span>,
+    <span class="hljs-comment">// size of click/tap effect</span>
+    <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
+
+    activeForce: <span class="hljs-number">0.01</span>
+    <span class="hljs-comment">// amount of force of hover effect</span>
+    <span class="hljs-comment">// negative values pull dots in, positive push out</span>
+  }
+}
+</code></pre>
+<h2 id="gotchas">Gotchas</h2>
+<p>As the halftone is low resolution, you don&#39;t need a high resolution source image.</p>
+<p>Images must be hosted on the same domain as the site. Cross-domain images cannot be used for <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#security-with-canvas-elements">security according to the <code>&lt;canvas&gt;</code> spec</a>.</p>
+<p>Smaller dots = lots more dots = poorer browser performance.</p>
+<p>As <a href="http://dropshado.ws/post/77229081704/firefox-doesnt-support-canvas-composite-darker">Firefox and IE do not support <code>darker</code> compositing</a>, so these browsers will fallback to simple black and white design, using <code>channels: [ &#39;lum&#39; ]</code>.</p>
+<h2 id="mit-license">MIT License</h2>
+<p>Breathing Halftone is released under the <a href="http://desandro.mit-license.org/">MIT License</a>. Have at it.</p>
+
+
+</body>
+</html>
