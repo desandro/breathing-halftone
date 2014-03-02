@@ -15,7 +15,7 @@ gulp.task( 'scripts', function() {
       'js/breathing-halftone.js'
     ])
     .pipe( concat('breathing-halftone.pkgd.js') )
-    .pipe( gulp.dest('dist/') );
+    .pipe( gulp.dest('./') );
 });
 
 // add syntax highlighter to markdown parser
