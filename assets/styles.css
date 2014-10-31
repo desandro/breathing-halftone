@@ -493,6 +493,19 @@ a:hover { color: #04F; }
   width: 100%;
 }
 
+.thumbnails:after {
+  content: '';
+  clear: both;
+  display: block;
+}
+
+.thumbnails img {
+  display: block;
+  float: left;
+  width: 20%;
+  margin-right: 1%;
+}
+
 /* syntax highlighting
 ------------------------- */
 
