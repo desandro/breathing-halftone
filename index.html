@@ -31,7 +31,6 @@
         <img data-name="ncsu" src="assets/ncsu.jpg" />
         <img data-name="the-look" src="assets/the-look.jpg" />
       </div>
-      <p></p>
 
     </div>
 
@@ -39,7 +38,8 @@
 <p><em>Images go whoa with lots of floaty dots</em></p>
 <p>Made for <a href="http://yaronschoen.com/">Yaron</a></p>
 <h2 id="install">Install</h2>
-<p><a href="http://breathing-halftone.desandro.com/breathing-halfton.pkgd.js">breathing-halftone.pkgd.js</a></p>
+<p><a href="http://breathing-halftone.desandro.com/dist/breathing-halfton.pkgd.js">breathing-halftone.pkgd.js</a></p>
+<p><a href="http://breathing-halftone.desandro.com/dist/breathing-halfton.pkgd.min.js">breathing-halftone.pkgd.min.js</a></p>
 <h2 id="usage">Usage</h2>
 <pre><code class="lang-js"><span class="hljs-comment">// get the image</span>
 <span class="hljs-comment">// jquery</span>
@@ -60,24 +60,26 @@
 <p>There are a bunch of options so you can fine-tune to your heart&#39;s content.</p>
 <pre><code class="lang-js"><span class="hljs-comment">// default options</span>
 {
-  dotSize: {
-    diameter: <span class="hljs-number">1</span>/<span class="hljs-number">40</span>,
-    <span class="hljs-comment">// size of dots</span>
-    <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
-    <span class="hljs-comment">// smaller dots = more dots = </span>
+  <span class="hljs-comment">// ----- dot size ----- //</span>
 
-    threshold: <span class="hljs-number">0.05</span>,
-    <span class="hljs-comment">// hides dots that are smaller than a percentage</span>
+  dotSize: <span class="hljs-number">1</span>/<span class="hljs-number">40</span>,
+  <span class="hljs-comment">// size of dots</span>
+  <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
+  <span class="hljs-comment">// smaller dots = more dots = poorer performance</span>
 
-    initVelocity: <span class="hljs-number">0.02</span>,
-    <span class="hljs-comment">// speed at which dots initially grow</span>
+  dotSizeThreshold: <span class="hljs-number">0.05</span>,
+  <span class="hljs-comment">// hides dots that are smaller than a percentage</span>
 
-    oscPeriod: <span class="hljs-number">3</span>,
-    <span class="hljs-comment">// duration in seconds of a cycle of dot size oscilliation or 'breathing'</span>
+  initVelocity: <span class="hljs-number">0.02</span>,
+  <span class="hljs-comment">// speed at which dots initially grow</span>
 
-    oscAmplitude: <span class="hljs-number">0.2</span>
-    <span class="hljs-comment">// percentage of change of oscillation</span>
-  },
+  oscPeriod: <span class="hljs-number">3</span>,
+  <span class="hljs-comment">// duration in seconds of a cycle of dot size oscilliation or 'breathing'</span>
+
+  oscAmplitude: <span class="hljs-number">0.2</span>
+  <span class="hljs-comment">// percentage of change of oscillation</span>
+
+  <span class="hljs-comment">// ----- color &amp; layout ----- //</span>
 
   isAdditive: <span class="hljs-literal">false</span>,
   <span class="hljs-comment">// additive is black with RGB dots,</span>
@@ -93,26 +95,26 @@
   isChannelLens: <span class="hljs-literal">true</span>,
   <span class="hljs-comment">// disables changing size of dots when displaced</span>
 
+  <span class="hljs-comment">// ----- behavior ----- //</span>
+
   friction: <span class="hljs-number">0.06</span>,
   <span class="hljs-comment">// lower makes dots easier to move, higher makes it harder</span>
 
-  displacement: {
-    hoverDiameter: <span class="hljs-number">0.3</span>,
-    <span class="hljs-comment">// size of hover effect</span>
-    <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
+  hoverDiameter: <span class="hljs-number">0.3</span>,
+  <span class="hljs-comment">// size of hover effect</span>
+  <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
 
-    hoverForce: -<span class="hljs-number">0.02</span>,
-    <span class="hljs-comment">// amount of force of hover effect</span>
-    <span class="hljs-comment">// negative values pull dots in, positive push out</span>
+  hoverForce: -<span class="hljs-number">0.02</span>,
+  <span class="hljs-comment">// amount of force of hover effect</span>
+  <span class="hljs-comment">// negative values pull dots in, positive push out</span>
 
-    activeDiameter: <span class="hljs-number">0.6</span>,
-    <span class="hljs-comment">// size of click/tap effect</span>
-    <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
+  activeDiameter: <span class="hljs-number">0.6</span>,
+  <span class="hljs-comment">// size of click/tap effect</span>
+  <span class="hljs-comment">// as a fraction of the diagonal of the image</span>
 
-    activeForce: <span class="hljs-number">0.01</span>
-    <span class="hljs-comment">// amount of force of hover effect</span>
-    <span class="hljs-comment">// negative values pull dots in, positive push out</span>
-  }
+  activeForce: <span class="hljs-number">0.01</span>
+  <span class="hljs-comment">// amount of force of hover effect</span>
+  <span class="hljs-comment">// negative values pull dots in, positive push out</span>
 }
 </code></pre>
 <h2 id="gotchas">Gotchas</h2>
