@@ -124,24 +124,23 @@ function Halftone( img, options ) {
 }
 
 Halftone.defaults = {
-  dotSize: {
-    diameter: 1/40,
-    threshold: 0.05,
-    initVelocity: 0.02,
-    oscPeriod: 3,
-    oscAmplitude: 0.2
-  },
+  // dot size
+  dotSize: 1/40,
+  dotSizeThreshold: 0.05,
+  initVelocity: 0.02,
+  oscPeriod: 3,
+  oscAmplitude: 0.2,
+  // layout and color
   isAdditive: false,
   isRadial: false,
   channels: [ 'red', 'green', 'blue' ],
   isChannelLens: true,
+  // behavoir
   friction: 0.06,
-  displacement: {
-    hoverDiameter: 0.3,
-    hoverForce: -0.02,
-    activeDiameter: 0.6,
-    activeForce: 0.01
-  }
+  hoverDiameter: 0.3,
+  hoverForce: -0.02,
+  activeDiameter: 0.6,
+  activeForce: 0.01
 };
 
 function makeCanvasAndCtx() {
@@ -245,7 +244,7 @@ Halftone.prototype.resizeCanvas = function() {
   // size properties
   this.diagonal = Math.sqrt( w*w + h*h );
   this.imgScale = this.width / this.imgWidth;
-  this.gridSize = this.options.dotSize.diameter * this.diagonal;
+  this.gridSize = this.options.dotSize * this.diagonal;
 
   // set proxy canvases size
   for ( var prop in this.proxyCanvases ) {
@@ -293,7 +292,6 @@ Halftone.prototype.animate = function() {
 
 Halftone.prototype.update = function() {
   // displace particles with cursors (mouse, touches)
-  var displaceOpts = this.options.displacement;
 
   for ( var i=0, len = this.particles.length; i < len; i++ ) {
     var particle = this.particles[i];
@@ -301,8 +299,8 @@ Halftone.prototype.update = function() {
     for ( var identifier in this.cursors ) {
       var cursor = this.cursors[ identifier ];
       var cursorState = cursor.isDown ? 'active' : 'hover';
-      var forceScale = displaceOpts[ cursorState + 'Force' ];
-      var diameter = displaceOpts[ cursorState + 'Diameter' ];
+      var forceScale = this.options[ cursorState + 'Force' ];
+      var diameter = this.options[ cursorState + 'Diameter' ];
       var radius = diameter / 2 * this.diagonal;
       var force = Vector.subtract( particle.position, cursor.position );
       var distanceScale = Math.max( 0, radius - force.magnitude ) / radius;
@@ -446,7 +444,7 @@ Halftone.prototype.initParticle = function( channel, x, y ) {
   // don't render if coords are outside image
   // don't display if under threshold
   var pixelChannelValue = this.getPixelChannelValue( x, y, channel );
-  if ( pixelChannelValue < this.options.dotSize.threshold ) {
+  if ( pixelChannelValue < this.options.dotSizeThreshold ) {
     return;
   }
 

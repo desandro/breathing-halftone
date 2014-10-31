@@ -33,7 +33,7 @@ function Particle( properties ) {
   this.oscSize = 0;
   this.initSize = 0;
   this.initSizeVelocity = ( Math.random() * 0.5 + 0.5 ) *
-    this.parent.options.dotSize.initVelocity;
+    this.parent.options.initVelocity;
 
   this.oscillationOffset = Math.random() * TAU;
   this.oscillationMagnitude = Math.random();
@@ -95,10 +95,10 @@ Particle.prototype.calculateSize = function() {
 
   // oscillation size
   var now = getNow();
-  var dotSizeOpts = this.parent.options.dotSize;
-  var oscSize = ( now / ( 1000 * dotSizeOpts.oscPeriod ) ) * TAU;
+  var opts = this.parent.options;
+  var oscSize = ( now / ( 1000 * opts.oscPeriod ) ) * TAU;
   oscSize = Math.cos( oscSize + this.oscillationOffset );
-  oscSize = oscSize * dotSizeOpts.oscAmplitude + 1;
+  oscSize = oscSize * opts.oscAmplitude + 1;
   this.oscSize = oscSize;
 };
 
