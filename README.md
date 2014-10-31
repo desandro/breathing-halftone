@@ -2,7 +2,7 @@
 
 _Images go whoa with lots of floaty dots_
 
-Made for [Yaron](http://yaronschoen.com/)
+Made for [Yaron](http://yaronschoen.com/info)
 
 ## Install
 
