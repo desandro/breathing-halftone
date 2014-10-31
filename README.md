@@ -6,9 +6,9 @@ Made for [Yaron](http://yaronschoen.com/)
 
 ## Install
 
-[breathing-halftone.pkgd.js](http://breathing-halftone.desandro.com/dist/breathing-halfton.pkgd.js)
+[breathing-halftone.pkgd.js](http://breathing-halftone.desandro.com/dist/breathing-halftone.pkgd.js)
 
-[breathing-halftone.pkgd.min.js](http://breathing-halftone.desandro.com/dist/breathing-halfton.pkgd.min.js)
+[breathing-halftone.pkgd.min.js](http://breathing-halftone.desandro.com/dist/breathing-halftone.pkgd.min.js)
 
 ## Usage
 
