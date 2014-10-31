@@ -3,19 +3,28 @@
 var fs = require('fs');
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 var gulpMarkdown = require('gulp-markdown');
 var rename = require('gulp-rename');
 var highlight = require('highlight.js');
 var through = require('through2');
 
-gulp.task( 'scripts', function() {
-  gulp.src([
-      'js/vector.js',
-      'js/particle.js',
-      'js/breathing-halftone.js'
-    ])
+gulp.task( 'dist', function() {
+  var jsFiles = [
+    'js/vector.js',
+    'js/particle.js',
+    'js/breathing-halftone.js'
+  ];
+
+  gulp.src( jsFiles )
     .pipe( concat('breathing-halftone.pkgd.js') )
-    .pipe( gulp.dest('./') );
+    .pipe( gulp.dest('dist') );
+
+  gulp.src( jsFiles )
+    .pipe( rename('breathing-halftone.pkgd.min.js') )
+    .pipe( uglify({ preserveComments: 'some' }) )
+    .pipe( gulp.dest('dist') );
+
 });
 
 // add syntax highlighter to markdown parser
