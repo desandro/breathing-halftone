@@ -486,12 +486,16 @@ a:hover { color: #04F; }
 /* demo
 ------------------------- */
 
-
+.demo p { font-size: 0.9em; }
 
 .halftone {
   display: block;
   width: 100%;
 }
+
+.img.halftone { height: auto; }
+
+.hero.is-active .demo { display: none; }
 
 .thumbnails:after {
   content: '';
@@ -503,8 +507,11 @@ a:hover { color: #04F; }
   display: block;
   float: left;
   width: 20%;
-  margin-right: 1%;
+  cursor: pointer;
+  border: 10px solid white;
 }
+
+.thumbnails img.is-selected { border-color: #09F; }
 
 /* syntax highlighting
 ------------------------- */
