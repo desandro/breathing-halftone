@@ -13,26 +13,20 @@ var demoOptions = {
   sarah: {},
 
   ncsu: {
-    dotSize: {
-      threshold: 0.1
-    },
+    dotSizeThreshold: 0.1,
     isAdditive: true,
     isRadial: true,
     friction: 0.04,
-    displacement: {
-      hoverDiameter: 0.8,
-      hoverForce: 0.007,
-      activeDiameter: 0.8,
-      activeForce: -0.007
-    }
+    hoverDiameter: 0.8,
+    hoverForce: 0.007,
+    activeDiameter: 0.8,
+    activeForce: -0.007
   },
 
   'the-look': {
-    dotSize: {
-      diameter: 1/70,
-      initVelocity: 0.05,
-      oscAmplitude: 0
-    },
+    dotSize: 1/70,
+    initVelocity: 0.05,
+    oscAmplitude: 0,
     friction: 0.05,
     channels: [ 'lum' ]
   }
