@@ -156,6 +156,8 @@ function makeCanvasAndCtx() {
 
 
 Halftone.prototype.create = function() {
+  this.isActive = true;
+
   // create main canvas
   var canvasAndCtx = makeCanvasAndCtx();
   this.canvas = canvasAndCtx.canvas;
@@ -280,6 +282,10 @@ Halftone.prototype.initParticles = function() {
 };
 
 Halftone.prototype.animate = function() {
+  // do not animate if not active
+  if ( !this.isActive ) {
+    return;
+  }
   this.update();
   this.render();
   requestAnimationFrame( this.animate.bind( this ) );
@@ -512,6 +518,15 @@ Halftone.prototype.bindEvents = function() {
   window.addEventListener( 'resize', this, false );
 };
 
+Halftone.prototype.unbindEvents = function() {
+  this.canvas.removeEventListener( 'mousedown', this, false );
+  this.canvas.removeEventListener( 'touchstart', this, false );
+  window.removeEventListener( 'mousemove', this, false );
+  window.removeEventListener( 'touchmove', this, false );
+  window.removeEventListener( 'touchend', this, false );
+  window.removeEventListener( 'resize', this, false );
+};
+
 Halftone.prototype.handleEvent = function( event ) {
   var method = 'on' + event.type;
   if ( this[ method ] ) {
@@ -616,6 +631,16 @@ Halftone.prototype.onresize = function() {
 
 debounceProto( Halftone, 'onresize', 200 );
 
+// ----- destroy ----- //
+
+Halftone.prototype.destroy = function() {
+  this.isActive = false;
+  this.unbindEvents();
+
+  this.img.style.visibility = '';
+  this.img.style.display = '';
+  this.canvas.parentNode.removeChild( this.canvas );
+};
 
 // --------------------------  -------------------------- //
 
